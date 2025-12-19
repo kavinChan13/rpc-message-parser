@@ -1,0 +1,23 @@
+# O-RAN RPC Log Parser - Backend Dependencies
+# Compatible with Python 3.13
+
+# Web Framework
+fastapi>=0.115.0
+uvicorn>=0.32.0
+python-multipart>=0.0.9
+
+# Database - use SQLAlchemy 2.0+
+SQLAlchemy>=2.0.36
+aiosqlite>=0.20.0
+greenlet>=3.1.0
+
+# Authentication
+python-jose>=3.3.0
+cryptography>=43.0.0
+
+# XML Parsing
+xmltodict>=0.14.0
+
+# Validation
+pydantic>=2.10.0
+pydantic-settings>=2.6.0
