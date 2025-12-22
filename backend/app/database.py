@@ -25,7 +25,7 @@ class Base(DeclarativeBase):
 
 
 class User(Base):
-    """用户Model - 简化版，只需用户名"""
+    """User model - simplified version, username only"""
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -38,7 +38,7 @@ class User(Base):
 
 
 class LogFile(Base):
-    """日志文件Model"""
+    """Log file model"""
     __tablename__ = "log_files"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -125,7 +125,7 @@ class ErrorMessage(Base):
 
 
 class CarrierEvent(Base):
-    """Carrier eventModel - 跟踪 array-carriers, low-level-endpoints, low-level-links 等"""
+    """Carrier event model - tracks array-carriers, low-level-endpoints, low-level-links, etc."""
     __tablename__ = "carrier_events"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -140,11 +140,11 @@ class CarrierEvent(Base):
     # Event details
     event_type = Column(String(50))  # create, update, delete, state-change
     carrier_type = Column(String(100))  # rx-array-carriers, tx-array-carriers, low-level-rx-links, low-level-tx-links, low-level-rx-endpoints, low-level-tx-endpoints
-    carrier_name = Column(String(200))  # carrier 名称/ID
+    carrier_name = Column(String(200))  # carrier name/ID
 
     # Carrier state
     state = Column(String(50), nullable=True)  # DISABLED, READY, BUSY, etc.
-    previous_state = Column(String(50), nullable=True)  # 之前的状态（Used for状态变化）
+    previous_state = Column(String(50), nullable=True)  # Previous state (used for state changes)
 
     # Operation info
     operation = Column(String(50))  # get, edit-config, notification
@@ -152,7 +152,7 @@ class CarrierEvent(Base):
     message_type = Column(String(50))  # rpc, rpc-reply, notification
 
     # Additional carrier info (JSON-like string for flexibility)
-    carrier_details = Column(Text, nullable=True)  # 存储额外的 carrier 属性
+    carrier_details = Column(Text, nullable=True)  # Store additional carrier attributes
 
     # Raw content
     xml_content = Column(Text, nullable=True)
@@ -162,13 +162,13 @@ class CarrierEvent(Base):
 
 
 async def init_db():
-    """初始化Database"""
+    """Initialize database"""
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
 
 async def get_db():
-    """获取DatabaseSession"""
+    """Get database session"""
     async with async_session() as session:
         try:
             yield session

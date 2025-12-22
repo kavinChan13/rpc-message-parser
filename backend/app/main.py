@@ -27,7 +27,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION,
-    description="O-RAN RPC message日志Parse分析系统 API",
+    description="O-RAN RPC Message Log Parsing and Analysis System API",
     lifespan=lifespan
 )
 
@@ -49,7 +49,7 @@ app.include_router(carriers_router, prefix="/api")
 
 @app.get("/api/health")
 async def health_check():
-    """健康检查"""
+    """Health check"""
     return {"status": "healthy", "version": settings.APP_VERSION}
 
 
@@ -80,7 +80,7 @@ if frontend_dist.exists():
 else:
     @app.get("/")
     async def root():
-        """根路径 - Frontend not built"""
+        """Root path - Frontend not built"""
         return {
             "name": settings.APP_NAME,
             "version": settings.APP_VERSION,

@@ -45,7 +45,7 @@ class LogFileCreate(BaseModel):
 
 
 class LogFileResponse(BaseModel):
-    """文件详情Response"""
+    """File detail response"""
     id: int
     filename: str
     original_filename: str
@@ -62,13 +62,13 @@ class LogFileResponse(BaseModel):
 
 
 class LogFileList(BaseModel):
-    """文件列表Response"""
+    """File list response"""
     files: List[LogFileResponse]
     total: int
 
 
 class ExtractedFileInfo(BaseModel):
-    """解压后的文件信息"""
+    """Extracted file information"""
     filename: str
     relative_path: str
     absolute_path: str
