@@ -82,7 +82,7 @@ function tokenizeLine(line: string): Token[] {
       continue;
     }
 
-    // < 或 </ 或 />
+    // < or </ or />
     if (line[i] === '<') {
       if (line[i + 1] === '/') {
         tokens.push({ type: 'bracket', value: '</' });
@@ -110,7 +110,7 @@ function tokenizeLine(line: string): Token[] {
       continue;
     }
 
-    // > 或 /> 或 ?>
+    // > or /> or ?>
     if (line[i] === '>') {
       tokens.push({ type: 'bracket', value: '>' });
       i++;
@@ -218,7 +218,7 @@ export function XmlHighlight({ xml }: { xml: string }) {
   );
 }
 
-// XML Styles（作为全局Styles注入）
+// XML styles (inject as global styles)
 export const xmlStyles = `
   .xml-content {
     margin: 0;

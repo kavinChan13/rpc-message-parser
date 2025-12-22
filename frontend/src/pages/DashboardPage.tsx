@@ -143,7 +143,7 @@ export default function DashboardPage() {
         return (
           <span className="badge badge-warning flex items-center gap-1">
             <Loader2 className="w-3 h-3 animate-spin" />
-            Parse中
+            Parsing
           </span>
         );
       case 'pending':
