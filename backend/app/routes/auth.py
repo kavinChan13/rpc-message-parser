@@ -33,7 +33,7 @@ async def login(user_data: UserLogin, db: AsyncSession = Depends(get_db)):
     # Get or create user
     user = await get_or_create_user(db, username)
 
-    # 创建 token
+    # Create token
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user.username},

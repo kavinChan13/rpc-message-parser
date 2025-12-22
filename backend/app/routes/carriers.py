@@ -30,7 +30,7 @@ async def get_carrier_events(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """获取 Carrier event列表"""
+    """Get carrier event list"""
     # Verify file ownership
     file_result = await db.execute(
         select(LogFile)
@@ -85,7 +85,7 @@ async def get_carrier_event_detail(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """获取 Carrier event详情"""
+    """Get carrier event details"""
     # Verify file ownership
     file_result = await db.execute(
         select(LogFile)
@@ -113,7 +113,7 @@ async def get_carrier_statistics(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """获取 Carrier Statistics"""
+    """Get carrier statistics"""
     # Verify file ownership
     file_result = await db.execute(
         select(LogFile)
@@ -177,7 +177,7 @@ async def get_carrier_timeline(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """获取特定 Carrier 的事件时间线"""
+    """Get event timeline for specific carrier"""
     # Verify file ownership
     file_result = await db.execute(
         select(LogFile)

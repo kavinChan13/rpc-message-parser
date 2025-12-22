@@ -27,17 +27,17 @@ router = APIRouter(prefix="/files", tags=["File Management"])
 
 
 def is_rpc_log_file(filename: str) -> bool:
-    """检查文件名是否为RPC日志文件"""
+    """Check if filename is an RPC log file"""
     filename_lower = filename.lower()
-    # 支持 *rpc.log 格式，但排除压缩文件
+    # Support *rpc.log format, but exclude archive files
     if any(filename_lower.endswith(ext) for ext in ['.xz', '.gz', '.bz2', '.zip', '.tar', '.tgz']):
         return False
     return 'rpc.log' in filename_lower
 
 
 def extract_xz_file(xz_path: Path, extract_dir: Path) -> Path:
-    """解压 .xz 文件"""
-    output_filename = xz_path.stem  # 移除 .xz 后缀
+    """Extract .xz file"""
+    output_filename = xz_path.stem  # Remove .xz extension
     output_path = extract_dir / output_filename
 
     with lzma.open(xz_path, 'rb') as xz_file:
@@ -48,22 +48,22 @@ def extract_xz_file(xz_path: Path, extract_dir: Path) -> Path:
 
 
 def extract_archive_recursive(archive_path: Path, extract_to: Path) -> List[Dict[str, Any]]:
-    """递归解压缩文件并返回所有RPC日志文件列表"""
+    """Recursively extract archives and return list of all RPC log files"""
     rpc_files = []
 
     def process_directory(directory: Path, relative_base: str = ""):
-        """Process目录，查找RPC文件和嵌套压缩包"""
+        """Process directory, find RPC files and nested archives"""
         for item in directory.iterdir():
             if item.is_file():
                 relative_path = f"{relative_base}/{item.name}" if relative_base else item.name
 
-                # 调试信息：打印所有找到的文件
-                print(f"发现文件: {item.name}, 是否为RPC日志: {is_rpc_log_file(item.name)}")
+                # Debug info: print all found files
+                print(f"Found file: {item.name}, is RPC log: {is_rpc_log_file(item.name)}")
 
-                # 检查是否为RPC日志文件
+                # Check if it's an RPC log file
                 if is_rpc_log_file(item.name):
                     file_size = item.stat().st_size
-                    print(f"✓ 添加RPC文件: {item.name}")
+                    print(f"✓ Adding RPC file: {item.name}")
                     rpc_files.append({
                         "filename": item.name,
                         "relative_path": relative_path,
@@ -71,7 +71,7 @@ def extract_archive_recursive(archive_path: Path, extract_to: Path) -> List[Dict
                         "size": file_size
                     })
 
-                # 检查是否为压缩文件，递归解压
+                # Check if it's an archive file, recursively extract
                 elif item.suffix.lower() in ['.zip', '.tar', '.gz', '.tgz', '.bz2', '.xz']:
                     nested_extract_dir = extract_to / f"nested_{uuid.uuid4().hex[:8]}"
                     nested_extract_dir.mkdir(exist_ok=True)
@@ -81,9 +81,9 @@ def extract_archive_recursive(archive_path: Path, extract_to: Path) -> List[Dict
                             with zipfile.ZipFile(item, 'r') as zf:
                                 zf.extractall(nested_extract_dir)
                         elif item.suffix.lower() == '.xz':
-                            # 解压 .xz 文件
+                            # Extract .xz file
                             extracted_file = extract_xz_file(item, nested_extract_dir)
-                            # 检查解压后的文件是否还是压缩文件或者是RPC日志
+                            # Check if extracted file is still an archive or an RPC log
                             if is_rpc_log_file(extracted_file.name):
                                 file_size = extracted_file.stat().st_size
                                 rpc_files.append({
@@ -93,23 +93,23 @@ def extract_archive_recursive(archive_path: Path, extract_to: Path) -> List[Dict
                                     "size": file_size
                                 })
                             elif extracted_file.suffix.lower() in ['.zip', '.tar', '.gz', '.tgz', '.bz2']:
-                                # 如果解压后还是压缩文件，继续Process
+                                # If still an archive after extraction, continue processing
                                 process_directory(nested_extract_dir, relative_path)
                         elif item.suffix.lower() in ['.tar', '.gz', '.tgz', '.bz2']:
                             with tarfile.open(item, 'r:*') as tf:
                                 tf.extractall(nested_extract_dir)
 
-                        # 递归Process解压后的目录（除了已经Process的.xz文件）
+                        # Recursively process extracted directory (excluding already processed .xz files)
                         if item.suffix.lower() != '.xz':
                             process_directory(nested_extract_dir, f"{relative_path}")
                     except Exception as e:
-                        print(f"无法解压嵌套压缩文件 {item}: {e}")
+                        print(f"Unable to extract nested archive {item}: {e}")
 
             elif item.is_dir():
                 relative_path = f"{relative_base}/{item.name}" if relative_base else item.name
                 process_directory(item, relative_path)
 
-    # 开始Process
+    # Start processing
     process_directory(extract_to)
     return rpc_files
 
@@ -120,7 +120,7 @@ async def upload_file(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """上传文件并返回所有RPC日志文件列表供用户选择"""
+    """Upload file and return list of all RPC log files for user selection"""
     filename_lower = file.filename.lower()
     is_archive = filename_lower.endswith(('.zip', '.tar', '.gz', '.tgz', '.bz2', '.xz'))
     is_log = is_rpc_log_file(file.filename)
@@ -133,7 +133,7 @@ async def upload_file(
 
     content = await file.read()
 
-    # 创建临时解压目录
+    # Create temporary extraction directory
     temp_extract_dir = settings.UPLOAD_DIR / str(current_user.id) / f"temp_{uuid.uuid4().hex}"
     temp_extract_dir.mkdir(parents=True, exist_ok=True)
 
@@ -141,12 +141,12 @@ async def upload_file(
 
     try:
         if is_archive:
-            # 保存压缩文件
+            # Save archive file
             temp_archive = temp_extract_dir / file.filename
             with open(temp_archive, 'wb') as f:
                 f.write(content)
 
-            # 解压到临时目录
+            # Extract to temporary directory
             extract_dir = temp_extract_dir / "extracted"
             extract_dir.mkdir(exist_ok=True)
 
@@ -155,18 +155,18 @@ async def upload_file(
                     with zipfile.ZipFile(temp_archive, 'r') as zf:
                         zf.extractall(extract_dir)
                 elif filename_lower.endswith('.xz'):
-                    # 解压单个 .xz 文件
+                    # Extract single .xz file
                     extract_xz_file(temp_archive, extract_dir)
                 else:
                     with tarfile.open(temp_archive, 'r:*') as tf:
                         tf.extractall(extract_dir)
             except Exception as e:
-                raise HTTPException(status_code=400, detail=f"解压失败: {str(e)}")
+                raise HTTPException(status_code=400, detail=f"Extraction failed: {str(e)}")
 
-            # 递归查找所有RPC文件
+            # Recursively find all RPC files
             rpc_files = extract_archive_recursive(temp_archive, extract_dir)
 
-            print(f"总共找到 {len(rpc_files)} 个RPC文件")
+            print(f"Total found {len(rpc_files)} RPC files")
             for f in rpc_files:
                 print(f"  - {f['filename']}")
 
@@ -174,15 +174,15 @@ async def upload_file(
                 raise HTTPException(status_code=400, detail="No RPC log files found in archive (filename must contain 'RPC.log', case-insensitive)")
 
         else:
-            # 单个日志文件
+            # Single log file
             file_size = len(content)
             if file_size > settings.MAX_FILE_SIZE:
                 raise HTTPException(
                     status_code=400,
-                    detail=f"File size超过限制 ({settings.MAX_FILE_SIZE // 1024 // 1024}MB)"
+                    detail=f"File size exceeds limit ({settings.MAX_FILE_SIZE // 1024 // 1024}MB)"
                 )
 
-            # 保存文件
+            # Save file
             saved_path = temp_extract_dir / file.filename
             with open(saved_path, 'wb') as f:
                 f.write(content)
@@ -194,7 +194,7 @@ async def upload_file(
                 "size": file_size
             })
 
-        # 返回文件列表和临时目录路径
+        # Return file list and temporary directory path
         return ExtractedFilesResponse(
             temp_directory=str(temp_extract_dir),
             original_filename=file.filename,
@@ -203,15 +203,15 @@ async def upload_file(
         )
 
     except HTTPException:
-        # 清理临时目录
+        # Clean up temporary directory
         if temp_extract_dir.exists():
             shutil.rmtree(temp_extract_dir)
         raise
     except Exception as e:
-        # 清理临时目录
+        # Clean up temporary directory
         if temp_extract_dir.exists():
             shutil.rmtree(temp_extract_dir)
-        raise HTTPException(status_code=500, detail=f"Process文件时出错: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
 
 
 @router.post("/parse-selected", response_model=List[LogFileResponse])
@@ -221,7 +221,7 @@ async def parse_selected_files(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Parse用户选择的文件"""
+    """Parse user-selected files"""
     temp_dir = Path(request.temp_directory)
 
     if not temp_dir.exists():
@@ -230,7 +230,7 @@ async def parse_selected_files(
     if not request.selected_files:
         raise HTTPException(status_code=400, detail="Please select at least one file")
 
-    # 用户永久目录
+    # User permanent directory
     user_upload_dir = settings.UPLOAD_DIR / str(current_user.id)
     user_upload_dir.mkdir(exist_ok=True)
 
@@ -245,14 +245,14 @@ async def parse_selected_files(
 
             file_size = file_path.stat().st_size
             if file_size > settings.MAX_FILE_SIZE:
-                continue  # 跳过超大文件
+                continue  # Skip oversized files
 
-            # 复制到永久目录
+            # Copy to permanent directory
             unique_filename = f"{uuid.uuid4()}_{file_info['filename']}"
             permanent_path = user_upload_dir / unique_filename
             shutil.copy2(file_path, permanent_path)
 
-            # 创建Database记录
+            # Create database record
             log_file = LogFile(
                 filename=unique_filename,
                 original_filename=f"{request.original_filename}:{file_info['relative_path']}",
@@ -267,33 +267,33 @@ async def parse_selected_files(
 
             created_files.append(log_file)
 
-            # 启动后台Parse
+            # Start background parsing
             background_tasks.add_task(parse_file_background, log_file.id)
 
         await db.commit()
 
-        # 清理临时目录
+        # Clean up temporary directory
         background_tasks.add_task(cleanup_temp_directory, str(temp_dir))
 
         return created_files
 
     except Exception as e:
         await db.rollback()
-        raise HTTPException(status_code=500, detail=f"保存文件时出错: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error saving file: {str(e)}")
 
 
 def cleanup_temp_directory(temp_dir: str):
-    """清理临时目录"""
+    """Clean up temporary directory"""
     try:
         temp_path = Path(temp_dir)
         if temp_path.exists():
             shutil.rmtree(temp_path)
     except Exception as e:
-        print(f"清理临时目录失败 {temp_dir}: {e}")
+        print(f"Failed to clean temporary directory {temp_dir}: {e}")
 
 
 async def parse_file_background(file_id: int):
-    """后台Parse文件"""
+    """Background file parsing"""
     from ..database import async_session
 
     async with async_session() as db:
@@ -331,7 +331,7 @@ async def list_files(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """获取用户的文件列表"""
+    """Get user's file list"""
     result = await db.execute(
         select(LogFile)
         .where(LogFile.user_id == current_user.id)
@@ -348,7 +348,7 @@ async def get_file(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """获取文件详情"""
+    """Get file details"""
     result = await db.execute(
         select(LogFile)
         .where(LogFile.id == file_id, LogFile.user_id == current_user.id)
@@ -367,7 +367,7 @@ async def delete_file(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """删除文件"""
+    """Delete file"""
     result = await db.execute(
         select(LogFile)
         .where(LogFile.id == file_id, LogFile.user_id == current_user.id)
@@ -386,4 +386,4 @@ async def delete_file(
     await db.delete(log_file)
     await db.commit()
 
-    return {"message": "文件已删除"}
+    return {"message": "File deleted"}

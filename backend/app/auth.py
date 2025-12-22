@@ -19,7 +19,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login", auto_error=Fals
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
-    """创建 JWT Token"""
+    """Create JWT token"""
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta

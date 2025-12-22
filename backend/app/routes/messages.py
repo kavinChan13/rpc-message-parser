@@ -40,7 +40,7 @@ async def get_rpc_messages(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """获取 RPC message列表"""
+    """Get RPC message list"""
     # Verify file ownership
     file_result = await db.execute(
         select(LogFile)
@@ -105,7 +105,7 @@ async def get_rpc_message_detail(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """获取 RPC message详情"""
+    """Get RPC message details"""
     # Verify file ownership
     file_result = await db.execute(
         select(LogFile)
@@ -136,7 +136,7 @@ async def get_error_messages(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """获取Error message列表"""
+    """Get error message list"""
     # Verify file ownership
     file_result = await db.execute(
         select(LogFile)
@@ -177,7 +177,7 @@ async def get_error_message_detail(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """获取Error message详情"""
+    """Get error message details"""
     # Verify file ownership
     file_result = await db.execute(
         select(LogFile)
@@ -205,7 +205,7 @@ async def get_statistics(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """获取Parse统计"""
+    """Get parse statistics"""
     # Verify file ownership
     file_result = await db.execute(
         select(LogFile)

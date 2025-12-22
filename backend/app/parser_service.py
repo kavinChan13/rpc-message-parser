@@ -382,7 +382,7 @@ class LogParserService:
 
     def _extract_yang_modules_from_element(self, element: Any, depth: int = 0) -> List[str]:
         """
-        Recursively extract all YANG module命名空间
+        Recursively extract all YANG module namespaces
         Return all found specific YANG module list
         """
         modules = []
@@ -429,21 +429,21 @@ class LogParserService:
             if direct_module:
                 return direct_module
 
-        # For特定操作，深入查找具体的 YANG module
+        # For specific operations, deep dive to find specific YANG modules
         target_elements = []
 
         if operation == 'get':
-            # get operation search filter 内部
+            # get operation search inside filter
             filter_elem = op_value.get('filter', {})
             if isinstance(filter_elem, dict):
                 target_elements.append(filter_elem)
         elif operation == 'get-config':
-            # get-config operation search filter 内部
+            # get-config operation search inside filter
             filter_elem = op_value.get('filter', {})
             if isinstance(filter_elem, dict):
                 target_elements.append(filter_elem)
         elif operation == 'edit-config':
-            # edit-config operation search config 内部
+            # edit-config operation search inside config
             config_elem = op_value.get('config', {})
             if isinstance(config_elem, dict):
                 target_elements.append(config_elem)
@@ -451,7 +451,7 @@ class LogParserService:
             # action operation direct search
             target_elements.append(op_value)
         else:
-            # 其他operation direct search
+            # For other operations, search directly
             target_elements.append(op_value)
 
         # Extract all from target element YANG module
@@ -468,8 +468,8 @@ class LogParserService:
                 unique_modules.append(m)
 
         if unique_modules:
-            # 返回所有找到的具体module，用逗号分隔
-            return ', '.join(unique_modules[:3])  # 最多显示3个module
+            # Return all found specific modules, comma-separated
+            return ', '.join(unique_modules[:3])  # Show maximum 3 modules
 
         return None
 
@@ -488,7 +488,7 @@ class LogParserService:
                 if isinstance(value, dict):
                     # Try to get more specific YANG module
                     yang_module = self._get_specific_yang_modules(key, value)
-                    # 如果没有找到具体module，回退到直接的命名空间
+                    # If no specific module found, fallback to direct namespace
                     if not yang_module:
                         ns = value.get('@xmlns', '')
                         yang_module = self.YANG_MODULES.get(ns, ns) if ns else None
@@ -510,7 +510,7 @@ class LogParserService:
 
         self.rpc_messages.append(rpc_msg)
 
-        # 提取 Carrier 相关事件
+        # Extract carrier-related events
         result['message_type'] = 'rpc'
         self._extract_carrier_events(result, xml_dict, operation or 'unknown', rpc_msg)
 
@@ -558,7 +558,7 @@ class LogParserService:
         for key, value in reply.items():
             if key not in ['@message-id', '@xmlns', 'ok', 'rpc-error']:
                 if key == 'data':
-                    # data 元素内部包含具体的 YANG module
+                    # data element contains specific YANG modules
                     operation = 'data'
                     if isinstance(value, dict):
                         modules = self._extract_yang_modules_from_element(value)
@@ -596,7 +596,7 @@ class LogParserService:
 
         self.rpc_messages.append(rpc_msg)
 
-        # 提取 Carrier 相关事件
+        # Extract carrier-related events
         result['message_type'] = 'rpc-reply'
         self._extract_carrier_events(result, xml_dict, operation or 'reply', rpc_msg)
 
@@ -614,7 +614,7 @@ class LogParserService:
                 del self.pending_requests[key]
 
     def _process_notification(self, result: Dict[str, Any], xml_dict: Dict):
-        """ProcessNotification消息"""
+        """Process notification messages"""
         notif = xml_dict.get('notification', {})
 
         # Find notification type and namespace
@@ -647,7 +647,7 @@ class LogParserService:
 
         self.rpc_messages.append(rpc_msg)
 
-        # 提取 Carrier 相关事件 (状态变化Notification等)
+        # Extract carrier-related events (state change notifications, etc.)
         result['message_type'] = 'notification'
         self._extract_carrier_events(result, xml_dict, notif_type or 'notification', rpc_msg)
 
@@ -657,7 +657,7 @@ class LogParserService:
             self._process_alarm_notification(result, notif.get('alarm-notif', {}))
 
     def _process_alarm_notification(self, result: Dict[str, Any], alarm: Dict):
-        """Process告警Notification"""
+        """Process alarm notifications"""
         err_msg = ErrorMessage(
             log_file_id=self.log_file.id,
             line_number=result['line_number'],
@@ -675,7 +675,7 @@ class LogParserService:
         self.error_messages.append(err_msg)
 
     def _extract_error_message(self, error: Dict) -> Optional[str]:
-        """提取Error message"""
+        """Extract error message"""
         msg = error.get('error-message')
         if isinstance(msg, dict):
             return msg.get('#text', str(msg))
@@ -684,10 +684,10 @@ class LogParserService:
     def _extract_carrier_events(self, result: Dict[str, Any], xml_dict: Dict,
                                  operation: str, rpc_msg: RPCMessage = None):
         """
-        从 XML 内容中提取 Carrier 相关事件
-        检测 array-carriers, low-level-links, low-level-endpoints 等
+        Extract carrier-related events from XML content
+        Detect array-carriers, low-level-links, low-level-endpoints, etc.
         """
-        # 根据Message type确定要搜索的内容
+        # Determine what to search based on message type
         content_to_search = None
         event_type = None
 
@@ -699,8 +699,8 @@ class LogParserService:
                 edit_config = rpc.get('edit-config', {})
                 config = edit_config.get('config', {})
                 content_to_search = config
-                # edit-config 可能是 create, update, delete
-                event_type = 'update'  # 默认为 update，后续根据 operation 属性判断
+                # edit-config can be create, update, delete
+                event_type = 'update'  # Default to update, later determined by operation attribute
             elif 'get' in rpc:
                 get_op = rpc.get('get', {})
                 filter_elem = get_op.get('filter', {})
@@ -724,22 +724,22 @@ class LogParserService:
         if not content_to_search:
             return
 
-        # 搜索 carrier 相关元素
+        # Search for carrier-related elements
         self._search_carrier_elements(content_to_search, result, event_type, operation, rpc_msg)
 
     def _search_carrier_elements(self, element: Any, result: Dict[str, Any],
                                   event_type: str, operation: str,
                                   rpc_msg: RPCMessage = None, depth: int = 0):
-        """递归搜索 carrier 相关元素"""
+        """Recursively search for carrier-related elements"""
         if not isinstance(element, dict) or depth > 15:
             return
 
         for key, value in element.items():
             if key in self.CARRIER_ELEMENTS:
-                # 找到 carrier 相关元素
+                # Found carrier-related element
                 self._process_carrier_element(key, value, result, event_type, operation, rpc_msg)
             elif not key.startswith('@'):
-                # 递归搜索子元素
+                # Recursively search child elements
                 if isinstance(value, dict):
                     self._search_carrier_elements(value, result, event_type, operation, rpc_msg, depth + 1)
                 elif isinstance(value, list):

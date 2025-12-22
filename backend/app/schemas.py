@@ -76,7 +76,7 @@ class ExtractedFileInfo(BaseModel):
 
 
 class ExtractedFilesResponse(BaseModel):
-    """文件解压Response"""
+    """File extraction response"""
     temp_directory: str
     original_filename: str
     files: List[Dict[str, Any]]
@@ -112,12 +112,12 @@ class RPCMessageResponse(BaseModel):
 
 
 class RPCMessageDetail(RPCMessageResponse):
-    """RPC message详情（含 XML）"""
+    """RPC message details (with XML)"""
     xml_content: Optional[str]
 
 
 class RPCMessageList(BaseModel):
-    """RPC message列表"""
+    """RPC message list"""
     messages: List[RPCMessageResponse]
     total: int
     page: int
@@ -145,12 +145,12 @@ class ErrorMessageResponse(BaseModel):
 
 
 class ErrorMessageDetail(ErrorMessageResponse):
-    """Error message详情（含 XML）"""
+    """Error message details (with XML)"""
     xml_content: Optional[str]
 
 
 class ErrorMessageList(BaseModel):
-    """Error message列表"""
+    """Error message list"""
     messages: List[ErrorMessageResponse]
     total: int
     page: int
@@ -179,13 +179,13 @@ class CarrierEventResponse(BaseModel):
 
 
 class CarrierEventDetail(CarrierEventResponse):
-    """Carrier event详情（含 XML 和详细信息）"""
+    """Carrier event details (with XML and detailed info)"""
     carrier_details: Optional[str]
     xml_content: Optional[str]
 
 
 class CarrierEventList(BaseModel):
-    """Carrier event列表"""
+    """Carrier event list"""
     events: List[CarrierEventResponse]
     total: int
     page: int
@@ -193,18 +193,18 @@ class CarrierEventList(BaseModel):
 
 
 class CarrierStatistics(BaseModel):
-    """Carrier 统计"""
+    """Carrier statistics"""
     total_events: int
-    by_carrier_type: dict  # 按 carrier Type统计
-    by_event_type: dict  # 按Event type统计 (create, update, delete, etc.)
-    by_state: dict  # 按状态统计
-    carrier_names: List[str]  # 所有 carrier 名称列表
+    by_carrier_type: dict  # Statistics by carrier type
+    by_event_type: dict  # Statistics by event type (create, update, delete, etc.)
+    by_state: dict  # Statistics by state
+    carrier_names: List[str]  # List of all carrier names
 
 
 # ==================== Statistics Schemas ====================
 
 class ParseStatistics(BaseModel):
-    """Parse统计"""
+    """Parse statistics"""
     total_lines: int
     total_messages: int
     rpc_count: int
