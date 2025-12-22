@@ -39,7 +39,7 @@ async def get_carrier_events(
     log_file = file_result.scalar_one_or_none()
 
     if not log_file:
-        raise HTTPException(status_code=404, detail="文件不存在")
+        raise HTTPException(status_code=404, detail="File not found")
 
     # Build query
     query = select(CarrierEvent).where(CarrierEvent.log_file_id == file_id)
@@ -92,7 +92,7 @@ async def get_carrier_event_detail(
         .where(LogFile.id == file_id, LogFile.user_id == current_user.id)
     )
     if not file_result.scalar_one_or_none():
-        raise HTTPException(status_code=404, detail="文件不存在")
+        raise HTTPException(status_code=404, detail="File not found")
 
     # Get event
     result = await db.execute(
@@ -102,7 +102,7 @@ async def get_carrier_event_detail(
     event = result.scalar_one_or_none()
 
     if not event:
-        raise HTTPException(status_code=404, detail="事件不存在")
+        raise HTTPException(status_code=404, detail="Event not found")
 
     return event
 
@@ -120,7 +120,7 @@ async def get_carrier_statistics(
         .where(LogFile.id == file_id, LogFile.user_id == current_user.id)
     )
     if not file_result.scalar_one_or_none():
-        raise HTTPException(status_code=404, detail="文件不存在")
+        raise HTTPException(status_code=404, detail="File not found")
 
     # Total events
     total_result = await db.execute(
@@ -184,7 +184,7 @@ async def get_carrier_timeline(
         .where(LogFile.id == file_id, LogFile.user_id == current_user.id)
     )
     if not file_result.scalar_one_or_none():
-        raise HTTPException(status_code=404, detail="文件不存在")
+        raise HTTPException(status_code=404, detail="File not found")
 
     # Get all events for this carrier
     result = await db.execute(

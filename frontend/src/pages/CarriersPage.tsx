@@ -9,7 +9,7 @@ import type { CarrierEvent, CarrierStatistics } from '../types';
 import { format } from 'date-fns';
 import { XmlHighlight, xmlStyles } from '../components/XmlViewer';
 
-// Carrier Type显示Name和颜色
+// Carrier type display name and colors
 const CARRIER_TYPE_CONFIG: Record<string, { label: string; color: string; bgColor: string }> = {
   'rx-array-carriers': { label: 'RX Array', color: '#22d3ee', bgColor: 'rgba(34, 211, 238, 0.15)' },
   'tx-array-carriers': { label: 'TX Array', color: '#a78bfa', bgColor: 'rgba(167, 139, 250, 0.15)' },
@@ -19,7 +19,7 @@ const CARRIER_TYPE_CONFIG: Record<string, { label: string; color: string; bgColo
   'low-level-tx-endpoints': { label: 'TX Endpoint', color: '#facc15', bgColor: 'rgba(250, 204, 21, 0.15)' },
 };
 
-// Event Type图标和颜色
+// Event type icons and colors
 const EVENT_TYPE_CONFIG: Record<string, { icon: typeof Plus; color: string; label: string }> = {
   'create': { icon: Plus, color: '#22c55e', label: 'Create' },
   'update': { icon: Pencil, color: '#3b82f6', label: 'Update' },
@@ -29,7 +29,7 @@ const EVENT_TYPE_CONFIG: Record<string, { icon: typeof Plus; color: string; labe
   'data': { icon: Eye, color: '#06b6d4', label: 'Data' },
 };
 
-// SVG 饼图组件
+// SVG pie chart component
 function PieChart({ data, size = 180 }: { data: { name: string; value: number; color: string }[]; size?: number }) {
   const total = data.reduce((sum, d) => sum + d.value, 0);
   if (total === 0) return null;
@@ -72,19 +72,19 @@ function PieChart({ data, size = 180 }: { data: { name: string; value: number; c
           </path>
         );
       })}
-      {/* 中心圆 */}
+      {/* Center circle */}
       <circle cx={center} cy={center} r={radius * 0.5} fill="#1a1a2e" />
       <text x={center} y={center - 8} textAnchor="middle" fill="#fff" fontSize="20" fontWeight="bold">
         {total}
       </text>
       <text x={center} y={center + 12} textAnchor="middle" fill="#94a3b8" fontSize="11">
-        事件总数
+        Total Events
       </text>
     </svg>
   );
 }
 
-// 水平条形图组件
+// Horizontal bar chart component
 function BarChart({ data, maxValue }: { data: { name: string; value: number; color: string }[]; maxValue?: number }) {
   const max = maxValue || Math.max(...data.map(d => d.value));
 
@@ -111,10 +111,10 @@ function BarChart({ data, maxValue }: { data: { name: string; value: number; col
   );
 }
 
-// Time线事件点组件
+// Timeline event point component
 function TimelineEvent({
   event,
-  isFirst: _isFirst, // 保留参数供未来使用
+  isFirst: _isFirst, // Reserved for future use
   isLast,
   fileId,
   expanded,
@@ -133,7 +133,7 @@ function TimelineEvent({
   const [detail, setDetail] = useState<CarrierEvent | null>(null);
 
   const loadDetail = async () => {
-    if (detail) return; // 已加载
+    if (detail) return; // Already loaded
     setLoading(true);
     try {
       const data = await carriersAPI.getEventDetail(fileId, event.id);
@@ -154,7 +154,7 @@ function TimelineEvent({
 
   return (
     <div className="flex gap-4 relative">
-      {/* 连接线 */}
+      {/* Connection line */}
       {!isLast && (
         <div
           className="absolute left-[19px] top-10 w-0.5 h-full -translate-x-1/2"
@@ -260,7 +260,7 @@ function TimelineEvent({
   );
 }
 
-// Carrier 卡片组件
+// Carrier card component
 function CarrierCard({
   carrierName,
   events,
@@ -318,7 +318,7 @@ function CarrierCard({
         )}
       </div>
 
-      {/* 事件统计 */}
+      {/* Event statistics */}
       <div className="flex gap-2 mt-4 flex-wrap">
         {Object.entries(eventCounts).map(([type, count]) => {
           const eventConfig = EVENT_TYPE_CONFIG[type];
@@ -369,7 +369,7 @@ export default function CarriersPage() {
 
   const loadData = async () => {
     if (!fileIdNum) {
-      setError(`无效的 fileId: ${String(fileId)}`);
+      setError(`Invalid fileId: ${String(fileId)}`);
       setLoading(false);
       return;
     }
@@ -419,7 +419,7 @@ export default function CarriersPage() {
             status ? `HTTP ${status}` : null,
             detail ? formatAny(detail) : null,
             msg ? String(msg) : null
-          ].filter(Boolean).join(' - ') || '请求失败';
+          ].filter(Boolean).join(' - ') || 'Request failed';
         };
 
         if (eventsResult.status === 'rejected') errs.push(toMsg(eventsResult.reason, 'events'));
@@ -449,7 +449,7 @@ export default function CarriersPage() {
         status ? `HTTP ${status}` : null,
         detail ? formatAny(detail) : null,
         msg ? String(msg) : null
-      ].filter(Boolean).join(' - ') || '请求失败');
+      ].filter(Boolean).join(' - ') || 'Request failed');
     } finally {
       setLoading(false);
     }
@@ -464,12 +464,12 @@ export default function CarriersPage() {
       }
       groups[event.carrier_name].push(event);
     });
-    // 按事件数量排序
+    // Sort by event count
     return Object.entries(groups)
       .sort((a, b) => b[1].length - a[1].length);
   }, [events]);
 
-  // 准备图表Data
+  // Prepare chart data
   const pieData = useMemo(() => {
     if (!statistics) return [];
     return Object.entries(statistics.by_carrier_type).map(([type, count]) => ({
@@ -521,10 +521,10 @@ export default function CarriersPage() {
         <div className="mb-6 bg-red-500/10 border border-red-500/30 rounded-2xl p-4">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <div className="text-sm font-semibold text-red-300">Carrier Data加载失败</div>
+              <div className="text-sm font-semibold text-red-300">Failed to load Carrier data</div>
               <div className="text-xs text-red-200/80 mt-1 break-words">{error}</div>
               <div className="text-xs text-dark-400 mt-2">
-                请确认你已登录、后端在 `localhost:8000` 运行，并打开浏览器 DevTools → Network 查看 `/api/carriers/*` 是否请求成功。
+                Please confirm you are logged in, backend is running at `localhost:8000`, and check DevTools → Network to see if `/api/carriers/*` requests succeeded.
               </div>
             </div>
             <button
@@ -557,7 +557,7 @@ export default function CarriersPage() {
             Carrier Tracking
           </h1>
           <p className="text-dark-400 mt-2">
-            可视化分析 Array Carriers、Endpoints、Links 的生命周期
+            Visualize lifecycle of Array Carriers, Endpoints, and Links
           </p>
         </div>
 
@@ -573,7 +573,7 @@ export default function CarriersPage() {
 
       {statistics && statistics.total_events > 0 ? (
         selectedCarrier ? (
-          // Carrier Time线视图
+          // Carrier timeline view
           <div>
             <div className="bg-dark-800/50 border border-dark-700 rounded-2xl p-6 mb-6">
               <div className="flex items-center gap-4">
@@ -592,7 +592,7 @@ export default function CarriersPage() {
                   <p className="text-dark-400">
                     {CARRIER_TYPE_CONFIG[selectedCarrierEvents[0]?.carrier_type]?.label || selectedCarrierEvents[0]?.carrier_type}
                     <span className="mx-2">•</span>
-                    {selectedCarrierEvents.length} 个事件
+                    {selectedCarrierEvents.length} events
                   </p>
                 </div>
               </div>
@@ -619,9 +619,9 @@ export default function CarriersPage() {
             </div>
           </div>
         ) : (
-          // 概览视图
+          // Overview
           <>
-            {/* 统计图表 */}
+            {/* Statistics charts */}
             <div className="grid lg:grid-cols-3 gap-6 mb-8">
               {/* 饼图 - Carrier Type分布 */}
               <div className="bg-dark-800/50 border border-dark-700 rounded-2xl p-6">
@@ -639,18 +639,18 @@ export default function CarriersPage() {
                 </div>
               </div>
 
-              {/* 条形图 - Event Type分布 */}
+              {/* Bar chart - Event type distribution */}
               <div className="bg-dark-800/50 border border-dark-700 rounded-2xl p-6">
                 <h3 className="text-lg font-semibold text-white mb-4">Event Type分布</h3>
                 <BarChart data={eventTypeData} />
               </div>
 
-              {/* 统计卡片 */}
+              {/* Statistics card */}
               <div className="bg-dark-800/50 border border-dark-700 rounded-2xl p-6">
-                <h3 className="text-lg font-semibold text-white mb-4">快速统计</h3>
+                <h3 className="text-lg font-semibold text-white mb-4">Quick Statistics</h3>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between p-3 bg-dark-700/30 rounded-xl">
-                    <span className="text-dark-400">总事件数</span>
+                    <span className="text-dark-400">Total Events</span>
                     <span className="text-2xl font-bold text-white">{statistics.total_events}</span>
                   </div>
                   <div className="flex items-center justify-between p-3 bg-dark-700/30 rounded-xl">
@@ -677,7 +677,7 @@ export default function CarriersPage() {
               </div>
             </div>
 
-            {/* Carrier 卡片网格 */}
+            {/* Carrier card grid */}
             <div className="bg-dark-800/30 border border-dark-700 rounded-2xl p-6">
               <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
                 <Radio className="w-5 h-5 text-primary-400" />
@@ -703,15 +703,15 @@ export default function CarriersPage() {
             <div className="w-20 h-20 bg-dark-700/50 rounded-full flex items-center justify-center mb-6">
               <Radio className="w-10 h-10 text-dark-500" />
             </div>
-            <h3 className="text-xl font-semibold text-white mb-2">未找到 Carrier 事件</h3>
+            <h3 className="text-xl font-semibold text-white mb-2">No Carrier Events Found</h3>
             <p className="text-dark-400 max-w-md">
-              请确保日志中包含 array-carriers、low-level-endpoints 或 low-level-links 相关的 NETCONF Message
+              Please ensure the log contains array-carriers, low-level-endpoints or low-level-links related NETCONF messages
             </p>
           </div>
         </div>
       )}
 
-      {/* XML 语法高亮Styles */}
+      {/* XML syntax highlighting styles */}
       <style>{xmlStyles}</style>
     </div>
   );

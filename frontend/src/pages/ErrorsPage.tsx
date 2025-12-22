@@ -19,12 +19,12 @@ export default function ErrorsPage() {
 
   // Expand的MessageID集合
   const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
-  // 加载中的MessageID集合
+  // Loading message ID set
   const [loadingIds, setLoadingIds] = useState<Set<number>>(new Set());
-  // 已加载的MessageDetails缓存
+  // Loaded message details cache
   const [messageDetails, setMessageDetails] = useState<Map<number, ErrorMessage>>(new Map());
 
-  // 滚动加载监听
+  // Scroll loading listener
   const observerTarget = useRef<HTMLDivElement>(null);
 
   // 加载Message
@@ -59,7 +59,7 @@ export default function ErrorsPage() {
     }
   }, [fileId, errorType, pageSize]);
 
-  // 初始加载
+  // Initial load
   useEffect(() => {
     setPage(1);
     loadMessages(1, false);
@@ -102,7 +102,7 @@ export default function ErrorsPage() {
       newExpandedIds.add(msgId);
       setExpandedIds(newExpandedIds);
 
-      // 如果还没有加载过Details，则加载
+      // Load details if not loaded yet
       if (!messageDetails.has(msgId) && fileId) {
         setLoadingIds(prev => new Set(prev).add(msgId));
         try {
@@ -188,7 +188,7 @@ export default function ErrorsPage() {
             Errors and Alarms
           </h1>
           <p className="text-dark-400 mt-1">
-            已加载 {messages.length.toLocaleString()} 条记录 {hasMore && '(滚动Load More)'}
+            Loaded {messages.length.toLocaleString()} records {hasMore && '(scroll to load more)'}
           </p>
         </div>
       </div>
@@ -228,7 +228,7 @@ export default function ErrorsPage() {
         {messages.length === 0 && !loading ? (
           <div className="text-center py-20 text-dark-400">
             <AlertTriangle className="w-12 h-12 mx-auto mb-4 text-dark-600" />
-            <p>暂无Error或告警记录</p>
+            <p>No errors or alarm records</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -297,7 +297,7 @@ export default function ErrorsPage() {
                               </div>
                             ) : (
                               <div className="space-y-4">
-                                {/* Error元信息 */}
+                                {/* Error metadata */}
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                                   <div>
                                     <div className="text-xs text-dark-500 mb-1">行号</div>
@@ -333,7 +333,7 @@ export default function ErrorsPage() {
                                   )}
                                   {msg.fault_source && (
                                     <div>
-                                      <div className="text-xs text-dark-500 mb-1">故障源</div>
+                                      <div className="text-xs text-dark-500 mb-1">Fault Source</div>
                                       <div className="text-white">{msg.fault_source}</div>
                                     </div>
                                   )}
@@ -388,7 +388,7 @@ export default function ErrorsPage() {
           </div>
         )}
 
-        {/* Load More指示器 */}
+        {/* Load more indicator */}
         <div ref={observerTarget} className="h-20 flex items-center justify-center border-t border-dark-700">
           {loading && (
             <div className="flex items-center gap-3 text-dark-400">
@@ -397,12 +397,12 @@ export default function ErrorsPage() {
             </div>
           )}
           {!loading && !hasMore && messages.length > 0 && (
-            <div className="text-dark-500 text-sm">已加载All记录</div>
+            <div className="text-dark-500 text-sm">All records loaded</div>
           )}
         </div>
       </div>
 
-      {/* XML 语法高亮Styles */}
+      {/* XML syntax highlighting styles */}
       <style>{xmlStyles}</style>
     </div>
   );

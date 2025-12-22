@@ -22,12 +22,12 @@ export default function RPCMessagesPage() {
 
   // Expand的MessageID集合
   const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
-  // 加载中的MessageID集合
+  // Loading message ID set
   const [loadingIds, setLoadingIds] = useState<Set<number>>(new Set());
-  // 已加载的MessageDetails缓存
+  // Loaded message details cache
   const [messageDetails, setMessageDetails] = useState<Map<number, RPCMessage>>(new Map());
 
-  // 滚动加载监听
+  // Scroll loading listener
   const observerTarget = useRef<HTMLDivElement>(null);
 
   // 加载Message
@@ -66,7 +66,7 @@ export default function RPCMessagesPage() {
     }
   }, [fileId, messageType, direction, keyword, sort, pageSize]);
 
-  // 初始加载
+  // Initial load
   useEffect(() => {
     setPage(1);
     loadMessages(1, false);
@@ -109,7 +109,7 @@ export default function RPCMessagesPage() {
       newExpandedIds.add(msgId);
       setExpandedIds(newExpandedIds);
 
-      // 如果还没有加载过Details，则加载
+      // Load details if not loaded yet
       if (!messageDetails.has(msgId) && fileId) {
         setLoadingIds(prev => new Set(prev).add(msgId));
         try {
@@ -173,7 +173,7 @@ export default function RPCMessagesPage() {
               </>
             ) : (
               <>
-                已加载 {messages.length.toLocaleString()} message(s) {hasMore && '(滚动Load More)'}
+                Loaded {messages.length.toLocaleString()} message(s) {hasMore && '(scroll to load more)'}
               </>
             )}
           </p>

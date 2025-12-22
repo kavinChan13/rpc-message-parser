@@ -335,8 +335,8 @@ Parser intelligently supports large XML messages spanning multiple lines:
 2025-12-15T08:09:18.167Z Dbg: [172.22.0.2] Session 1: Sending message:...<config>...
 2025-12-15T08:09:18.168Z Dbg: [172.22.0.2] Session 1: Sending message:...</config></edit-config></rpc>
 ```
-✅ Auto-merge into complete message  
-✅ Correctly pair requests and replies  
+✅ Auto-merge into complete message
+✅ Correctly pair requests and replies
 ✅ Accurately calculate response time
 
 ---

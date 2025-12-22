@@ -49,7 +49,7 @@ async def get_rpc_messages(
     log_file = file_result.scalar_one_or_none()
 
     if not log_file:
-        raise HTTPException(status_code=404, detail="文件不存在")
+        raise HTTPException(status_code=404, detail="File not found")
 
     # Build query
     query = select(RPCMessage).where(RPCMessage.log_file_id == file_id)
@@ -112,7 +112,7 @@ async def get_rpc_message_detail(
         .where(LogFile.id == file_id, LogFile.user_id == current_user.id)
     )
     if not file_result.scalar_one_or_none():
-        raise HTTPException(status_code=404, detail="文件不存在")
+        raise HTTPException(status_code=404, detail="File not found")
 
     # Get message
     result = await db.execute(
@@ -122,7 +122,7 @@ async def get_rpc_message_detail(
     message = result.scalar_one_or_none()
 
     if not message:
-        raise HTTPException(status_code=404, detail="消息不存在")
+        raise HTTPException(status_code=404, detail="Message not found")
 
     return message
 
@@ -143,7 +143,7 @@ async def get_error_messages(
         .where(LogFile.id == file_id, LogFile.user_id == current_user.id)
     )
     if not file_result.scalar_one_or_none():
-        raise HTTPException(status_code=404, detail="文件不存在")
+        raise HTTPException(status_code=404, detail="File not found")
 
     # Build query
     query = select(ErrorMessage).where(ErrorMessage.log_file_id == file_id)
@@ -184,7 +184,7 @@ async def get_error_message_detail(
         .where(LogFile.id == file_id, LogFile.user_id == current_user.id)
     )
     if not file_result.scalar_one_or_none():
-        raise HTTPException(status_code=404, detail="文件不存在")
+        raise HTTPException(status_code=404, detail="File not found")
 
     # Get message
     result = await db.execute(
@@ -194,7 +194,7 @@ async def get_error_message_detail(
     message = result.scalar_one_or_none()
 
     if not message:
-        raise HTTPException(status_code=404, detail="消息不存在")
+        raise HTTPException(status_code=404, detail="Message not found")
 
     return message
 
@@ -214,7 +214,7 @@ async def get_statistics(
     log_file = file_result.scalar_one_or_none()
 
     if not log_file:
-        raise HTTPException(status_code=404, detail="文件不存在")
+        raise HTTPException(status_code=404, detail="File not found")
 
     # Message type counts
     type_result = await db.execute(

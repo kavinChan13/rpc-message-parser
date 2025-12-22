@@ -128,7 +128,7 @@ async def upload_file(
     if not (is_log or is_archive):
         raise HTTPException(
             status_code=400,
-            detail="仅支持 .log 文件或压缩文件（.zip, .tar, .gz, .tgz, .bz2, .xz）"
+            detail="Only .log files or archive files are supported (.zip, .tar, .gz, .tgz, .bz2, .xz)"
         )
 
     content = await file.read()
@@ -171,7 +171,7 @@ async def upload_file(
                 print(f"  - {f['filename']}")
 
             if not rpc_files:
-                raise HTTPException(status_code=400, detail="压缩包内未找到任何RPC日志文件（文件名需包含'RPC.log'，不区分大小写）")
+                raise HTTPException(status_code=400, detail="No RPC log files found in archive (filename must contain 'RPC.log', case-insensitive)")
 
         else:
             # 单个日志文件
@@ -225,10 +225,10 @@ async def parse_selected_files(
     temp_dir = Path(request.temp_directory)
 
     if not temp_dir.exists():
-        raise HTTPException(status_code=400, detail="临时目录不存在或已过期")
+        raise HTTPException(status_code=400, detail="Temporary directory does not exist or has expired")
 
     if not request.selected_files:
-        raise HTTPException(status_code=400, detail="请至少选择一个文件")
+        raise HTTPException(status_code=400, detail="Please select at least one file")
 
     # 用户永久目录
     user_upload_dir = settings.UPLOAD_DIR / str(current_user.id)
@@ -356,7 +356,7 @@ async def get_file(
     log_file = result.scalar_one_or_none()
 
     if not log_file:
-        raise HTTPException(status_code=404, detail="文件不存在")
+        raise HTTPException(status_code=404, detail="File not found")
 
     return log_file
 
@@ -375,7 +375,7 @@ async def delete_file(
     log_file = result.scalar_one_or_none()
 
     if not log_file:
-        raise HTTPException(status_code=404, detail="文件不存在")
+        raise HTTPException(status_code=404, detail="File not found")
 
     # Delete physical file
     file_path = Path(log_file.file_path)

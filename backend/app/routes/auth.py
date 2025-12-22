@@ -1,5 +1,5 @@
 """
-简化版Authentication API - 只需用户名
+Simplified Authentication API - username only
 """
 
 from datetime import timedelta
@@ -18,19 +18,19 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 @router.post("/login", response_model=Token)
 async def login(user_data: UserLogin, db: AsyncSession = Depends(get_db)):
     """
-    用户登录/进入系统
+    User login/enter system
 
-    只需提供用户名，如果用户不存在会自动创建
+    Only username required, automatically creates user if not exists
     """
     username = user_data.username.strip()
 
     if not username:
-        raise HTTPException(status_code=400, detail="用户名不能为空")
+        raise HTTPException(status_code=400, detail="Username cannot be empty")
 
     if len(username) > 50:
-        raise HTTPException(status_code=400, detail="用户名长度不能超过50个字符")
+        raise HTTPException(status_code=400, detail="Username cannot exceed 50 characters")
 
-    # 获取或创建用户
+    # Get or create user
     user = await get_or_create_user(db, username)
 
     # 创建 token
@@ -48,5 +48,5 @@ async def login(user_data: UserLogin, db: AsyncSession = Depends(get_db)):
 
 @router.get("/me", response_model=UserResponse)
 async def get_me(current_user = Depends(get_current_user)):
-    """获取当前用户信息"""
+    """Get current user information"""
     return current_user

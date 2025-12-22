@@ -1,5 +1,5 @@
 """
-简化版Authenticationmodule - 只需用户名，无需密码
+Simplified authentication module - username only, no password required
 """
 
 from datetime import datetime, timedelta
@@ -14,7 +14,7 @@ from .config import settings
 from .database import get_db, User
 
 
-# OAuth2 scheme - 使用简化的 token 方式
+# OAuth2 scheme - using simplified token method
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login", auto_error=False)
 
 
@@ -31,23 +31,23 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
 
 
 async def get_user_by_username(db: AsyncSession, username: str) -> Optional[User]:
-    """通过用户名获取用户"""
+    """Get user by username"""
     result = await db.execute(select(User).where(User.username == username))
     return result.scalar_one_or_none()
 
 
 async def get_or_create_user(db: AsyncSession, username: str) -> User:
-    """获取或创建用户（简化版：只需用户名）"""
+    """Get or create user (simplified: username only)"""
     user = await get_user_by_username(db, username)
 
     if not user:
-        # 自动创建用户
+        # Automatically create user
         user = User(username=username)
         db.add(user)
         await db.commit()
         await db.refresh(user)
     else:
-        # 更新最后登录时间
+        # Update last login time
         user.last_login = datetime.utcnow()
         await db.commit()
 
@@ -58,10 +58,10 @@ async def get_current_user(
     token: Optional[str] = Depends(oauth2_scheme),
     db: AsyncSession = Depends(get_db)
 ) -> User:
-    """获取当前用户"""
+    """Get current user"""
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="请先输入用户名",
+        detail="Please enter username first",
         headers={"WWW-Authenticate": "Bearer"},
     )
 
