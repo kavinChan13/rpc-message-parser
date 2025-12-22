@@ -16,7 +16,7 @@ from ..schemas import (
 )
 
 
-router = APIRouter(prefix="/messages", tags=["消息查询"])
+router = APIRouter(prefix="/messages", tags=["Message Query"])
 
 
 @router.get("/{file_id}/rpc", response_model=RPCMessageList)
@@ -26,21 +26,21 @@ async def get_rpc_messages(
     page_size: int = Query(50, ge=1, le=200),
     message_type: Optional[str] = Query(None, description="rpc, rpc-reply, notification"),
     direction: Optional[str] = Query(None, description="DU->RU, RU->DU"),
-    operation: Optional[str] = Query(None, description="操作类型筛选"),
-    keyword: Optional[str] = Query(None, description="XML 内容关键字搜索"),
+    operation: Optional[str] = Query(None, description="Operation type filter"),
+    keyword: Optional[str] = Query(None, description="Keyword search in XML content"),
     sort_by: Optional[str] = Query(
         None,
-        description="排序字段: response_time（按响应时间排序）"
+        description="Sort field: response_time (sort by response time)"
     ),
     sort_order: Optional[str] = Query(
         "asc",
-        description="排序方向: asc / desc",
+        description="Sort direction: asc / desc",
         pattern="^(asc|desc)$"
     ),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """获取 RPC 消息列表"""
+    """获取 RPC message列表"""
     # Verify file ownership
     file_result = await db.execute(
         select(LogFile)
@@ -105,7 +105,7 @@ async def get_rpc_message_detail(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """获取 RPC 消息详情"""
+    """获取 RPC message详情"""
     # Verify file ownership
     file_result = await db.execute(
         select(LogFile)
@@ -136,7 +136,7 @@ async def get_error_messages(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """获取错误消息列表"""
+    """获取Error message列表"""
     # Verify file ownership
     file_result = await db.execute(
         select(LogFile)
@@ -177,7 +177,7 @@ async def get_error_message_detail(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """获取错误消息详情"""
+    """获取Error message详情"""
     # Verify file ownership
     file_result = await db.execute(
         select(LogFile)
@@ -205,7 +205,7 @@ async def get_statistics(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """获取解析统计"""
+    """获取Parse统计"""
     # Verify file ownership
     file_result = await db.execute(
         select(LogFile)

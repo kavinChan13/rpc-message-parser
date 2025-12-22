@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 class Settings(BaseSettings):
-    """应用配置"""
+    """应用Configuration"""
 
     # App settings
     APP_NAME: str = "O-RAN Log Parser"

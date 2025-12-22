@@ -9,7 +9,7 @@ import type { CarrierEvent, CarrierStatistics } from '../types';
 import { format } from 'date-fns';
 import { XmlHighlight, xmlStyles } from '../components/XmlViewer';
 
-// Carrier 类型显示名称和颜色
+// Carrier Type显示Name和颜色
 const CARRIER_TYPE_CONFIG: Record<string, { label: string; color: string; bgColor: string }> = {
   'rx-array-carriers': { label: 'RX Array', color: '#22d3ee', bgColor: 'rgba(34, 211, 238, 0.15)' },
   'tx-array-carriers': { label: 'TX Array', color: '#a78bfa', bgColor: 'rgba(167, 139, 250, 0.15)' },
@@ -19,14 +19,14 @@ const CARRIER_TYPE_CONFIG: Record<string, { label: string; color: string; bgColo
   'low-level-tx-endpoints': { label: 'TX Endpoint', color: '#facc15', bgColor: 'rgba(250, 204, 21, 0.15)' },
 };
 
-// 事件类型图标和颜色
+// Event Type图标和颜色
 const EVENT_TYPE_CONFIG: Record<string, { icon: typeof Plus; color: string; label: string }> = {
-  'create': { icon: Plus, color: '#22c55e', label: '创建' },
-  'update': { icon: Pencil, color: '#3b82f6', label: '更新' },
-  'delete': { icon: Trash2, color: '#ef4444', label: '删除' },
-  'state-change': { icon: RefreshCw, color: '#f59e0b', label: '状态变化' },
-  'query': { icon: Search, color: '#8b5cf6', label: '查询' },
-  'data': { icon: Eye, color: '#06b6d4', label: '数据' },
+  'create': { icon: Plus, color: '#22c55e', label: 'Create' },
+  'update': { icon: Pencil, color: '#3b82f6', label: 'Update' },
+  'delete': { icon: Trash2, color: '#ef4444', label: 'Delete' },
+  'state-change': { icon: RefreshCw, color: '#f59e0b', label: 'State Change' },
+  'query': { icon: Search, color: '#8b5cf6', label: 'Query' },
+  'data': { icon: Eye, color: '#06b6d4', label: 'Data' },
 };
 
 // SVG 饼图组件
@@ -111,7 +111,7 @@ function BarChart({ data, maxValue }: { data: { name: string; value: number; col
   );
 }
 
-// 时间线事件点组件
+// Time线事件点组件
 function TimelineEvent({
   event,
   isFirst: _isFirst, // 保留参数供未来使用
@@ -218,7 +218,7 @@ function TimelineEvent({
               {expanded ? (
                 <>
                   <ChevronUp className="w-3 h-3" />
-                  收起
+                  Collapse
                 </>
               ) : (
                 <>
@@ -229,18 +229,18 @@ function TimelineEvent({
             </button>
           </div>
 
-          {/* 展开的 XML 内容 */}
+          {/* Expand的 XML 内容 */}
           {expanded && (
             <div className="mt-4 pt-4 border-t border-dark-700">
               {loading ? (
                 <div className="flex items-center justify-center py-8">
                   <div className="w-6 h-6 border-2 border-primary-400 border-t-transparent rounded-full animate-spin" />
-                  <span className="ml-3 text-dark-400">加载中...</span>
+                  <span className="ml-3 text-dark-400">Loading...</span>
                 </div>
               ) : (
                 <div>
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xs text-dark-500 uppercase tracking-wider">原始 XML 消息</span>
+                    <span className="text-xs text-dark-500 uppercase tracking-wider">Raw XML Message</span>
                     <div className="flex-1 h-px bg-dark-700"></div>
                   </div>
                   <div className="bg-dark-950 border border-dark-700 rounded-xl overflow-hidden">
@@ -334,7 +334,7 @@ function CarrierCard({
         })}
       </div>
 
-      {/* 时间范围 */}
+      {/* Time范围 */}
       <div className="flex items-center justify-between mt-4 pt-4 border-t border-dark-700/50 text-xs text-dark-500">
         <div className="flex items-center gap-1">
           <Clock className="w-3 h-3" />
@@ -455,7 +455,7 @@ export default function CarriersPage() {
     }
   };
 
-  // 按 carrier 名称分组
+  // 按 carrier Name分组
   const carrierGroups = useMemo(() => {
     const groups: Record<string, CarrierEvent[]> = {};
     events.forEach(event => {
@@ -469,7 +469,7 @@ export default function CarriersPage() {
       .sort((a, b) => b[1].length - a[1].length);
   }, [events]);
 
-  // 准备图表数据
+  // 准备图表Data
   const pieData = useMemo(() => {
     if (!statistics) return [];
     return Object.entries(statistics.by_carrier_type).map(([type, count]) => ({
@@ -521,7 +521,7 @@ export default function CarriersPage() {
         <div className="mb-6 bg-red-500/10 border border-red-500/30 rounded-2xl p-4">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <div className="text-sm font-semibold text-red-300">Carrier 数据加载失败</div>
+              <div className="text-sm font-semibold text-red-300">Carrier Data加载失败</div>
               <div className="text-xs text-red-200/80 mt-1 break-words">{error}</div>
               <div className="text-xs text-dark-400 mt-2">
                 请确认你已登录、后端在 `localhost:8000` 运行，并打开浏览器 DevTools → Network 查看 `/api/carriers/*` 是否请求成功。
@@ -544,7 +544,7 @@ export default function CarriersPage() {
           className="inline-flex items-center gap-2 text-dark-400 hover:text-primary-400 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          返回文件详情
+          BackFile Details
         </Link>
       </div>
 
@@ -554,7 +554,7 @@ export default function CarriersPage() {
             <div className="p-2 bg-gradient-to-br from-primary-500/20 to-purple-500/20 rounded-xl">
               <Radio className="w-8 h-8 text-primary-400" />
             </div>
-            Carrier 跟踪
+            Carrier Tracking
           </h1>
           <p className="text-dark-400 mt-2">
             可视化分析 Array Carriers、Endpoints、Links 的生命周期
@@ -566,14 +566,14 @@ export default function CarriersPage() {
             onClick={() => { setSelectedCarrier(null); setExpandedEventIds(new Set()); }}
             className="px-4 py-2 bg-dark-700 hover:bg-dark-600 text-white rounded-lg transition-colors"
           >
-            返回概览
+            Back概览
           </button>
         )}
       </div>
 
       {statistics && statistics.total_events > 0 ? (
         selectedCarrier ? (
-          // Carrier 时间线视图
+          // Carrier Time线视图
           <div>
             <div className="bg-dark-800/50 border border-dark-700 rounded-2xl p-6 mb-6">
               <div className="flex items-center gap-4">
@@ -601,7 +601,7 @@ export default function CarriersPage() {
             <div className="bg-dark-800/30 border border-dark-700 rounded-2xl p-6">
               <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
                 <Activity className="w-5 h-5 text-primary-400" />
-                事件时间线
+                Event Timeline
               </h3>
               <div className="max-h-[600px] overflow-y-auto pr-2">
                 {selectedCarrierEvents.map((event, index) => (
@@ -623,9 +623,9 @@ export default function CarriersPage() {
           <>
             {/* 统计图表 */}
             <div className="grid lg:grid-cols-3 gap-6 mb-8">
-              {/* 饼图 - Carrier 类型分布 */}
+              {/* 饼图 - Carrier Type分布 */}
               <div className="bg-dark-800/50 border border-dark-700 rounded-2xl p-6">
-                <h3 className="text-lg font-semibold text-white mb-4">Carrier 类型分布</h3>
+                <h3 className="text-lg font-semibold text-white mb-4">Carrier Type分布</h3>
                 <div className="flex justify-center">
                   <PieChart data={pieData} />
                 </div>
@@ -639,9 +639,9 @@ export default function CarriersPage() {
                 </div>
               </div>
 
-              {/* 条形图 - 事件类型分布 */}
+              {/* 条形图 - Event Type分布 */}
               <div className="bg-dark-800/50 border border-dark-700 rounded-2xl p-6">
-                <h3 className="text-lg font-semibold text-white mb-4">事件类型分布</h3>
+                <h3 className="text-lg font-semibold text-white mb-4">Event Type分布</h3>
                 <BarChart data={eventTypeData} />
               </div>
 
@@ -658,12 +658,12 @@ export default function CarriersPage() {
                     <span className="text-2xl font-bold text-primary-400">{statistics.carrier_names.length}</span>
                   </div>
                   <div className="flex items-center justify-between p-3 bg-dark-700/30 rounded-xl">
-                    <span className="text-dark-400">类型数量</span>
+                    <span className="text-dark-400">Type数量</span>
                     <span className="text-2xl font-bold text-purple-400">{Object.keys(statistics.by_carrier_type).length}</span>
                   </div>
                   {Object.entries(statistics.by_state || {}).length > 0 && (
                     <div className="p-3 bg-dark-700/30 rounded-xl">
-                      <div className="text-dark-400 mb-2">状态分布</div>
+                      <div className="text-dark-400 mb-2">Status分布</div>
                       <div className="flex flex-wrap gap-2">
                         {Object.entries(statistics.by_state).slice(0, 4).map(([state, count]) => (
                           <span key={state} className="text-xs px-2 py-1 bg-dark-600 rounded text-dark-300">
@@ -697,7 +697,7 @@ export default function CarriersPage() {
           </>
         )
       ) : (
-        // 空状态
+        // 空Status
         <div className="bg-dark-800/30 border border-dark-700 rounded-2xl p-12">
           <div className="flex flex-col items-center justify-center text-center">
             <div className="w-20 h-20 bg-dark-700/50 rounded-full flex items-center justify-center mb-6">
@@ -705,13 +705,13 @@ export default function CarriersPage() {
             </div>
             <h3 className="text-xl font-semibold text-white mb-2">未找到 Carrier 事件</h3>
             <p className="text-dark-400 max-w-md">
-              请确保日志中包含 array-carriers、low-level-endpoints 或 low-level-links 相关的 NETCONF 消息
+              请确保日志中包含 array-carriers、low-level-endpoints 或 low-level-links 相关的 NETCONF Message
             </p>
           </div>
         </div>
       )}
 
-      {/* XML 语法高亮样式 */}
+      {/* XML 语法高亮Styles */}
       <style>{xmlStyles}</style>
     </div>
   );

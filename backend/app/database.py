@@ -25,7 +25,7 @@ class Base(DeclarativeBase):
 
 
 class User(Base):
-    """用户模型 - 简化版，只需用户名"""
+    """用户Model - 简化版，只需用户名"""
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -38,7 +38,7 @@ class User(Base):
 
 
 class LogFile(Base):
-    """日志文件模型"""
+    """日志文件Model"""
     __tablename__ = "log_files"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -66,7 +66,7 @@ class LogFile(Base):
 
 
 class RPCMessage(Base):
-    """RPC 消息模型"""
+    """RPC messageModel"""
     __tablename__ = "rpc_messages"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -96,7 +96,7 @@ class RPCMessage(Base):
 
 
 class ErrorMessage(Base):
-    """错误消息模型"""
+    """Error messageModel"""
     __tablename__ = "error_messages"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -125,7 +125,7 @@ class ErrorMessage(Base):
 
 
 class CarrierEvent(Base):
-    """Carrier 事件模型 - 跟踪 array-carriers, low-level-endpoints, low-level-links 等"""
+    """Carrier eventModel - 跟踪 array-carriers, low-level-endpoints, low-level-links 等"""
     __tablename__ = "carrier_events"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -144,7 +144,7 @@ class CarrierEvent(Base):
 
     # Carrier state
     state = Column(String(50), nullable=True)  # DISABLED, READY, BUSY, etc.
-    previous_state = Column(String(50), nullable=True)  # 之前的状态（用于状态变化）
+    previous_state = Column(String(50), nullable=True)  # 之前的状态（Used for状态变化）
 
     # Operation info
     operation = Column(String(50))  # get, edit-config, notification
@@ -162,13 +162,13 @@ class CarrierEvent(Base):
 
 
 async def init_db():
-    """初始化数据库"""
+    """初始化Database"""
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
 
 async def get_db():
-    """获取数据库会话"""
+    """获取DatabaseSession"""
     async with async_session() as session:
         try:
             yield session

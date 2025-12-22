@@ -17,17 +17,17 @@ export default function ErrorsPage() {
   // Filters
   const [errorType, setErrorType] = useState('');
 
-  // 展开的消息ID集合
+  // Expand的MessageID集合
   const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
-  // 加载中的消息ID集合
+  // 加载中的MessageID集合
   const [loadingIds, setLoadingIds] = useState<Set<number>>(new Set());
-  // 已加载的消息详情缓存
+  // 已加载的MessageDetails缓存
   const [messageDetails, setMessageDetails] = useState<Map<number, ErrorMessage>>(new Map());
 
   // 滚动加载监听
   const observerTarget = useRef<HTMLDivElement>(null);
 
-  // 加载消息
+  // 加载Message
   const loadMessages = useCallback(async (pageNum: number, append: boolean = false) => {
     if (!fileId) return;
     setLoading(true);
@@ -65,7 +65,7 @@ export default function ErrorsPage() {
     loadMessages(1, false);
   }, [fileId, errorType]);
 
-  // 滚动加载更多
+  // 滚动Load More
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -98,11 +98,11 @@ export default function ErrorsPage() {
       newExpandedIds.delete(msgId);
       setExpandedIds(newExpandedIds);
     } else {
-      // 展开
+      // Expand
       newExpandedIds.add(msgId);
       setExpandedIds(newExpandedIds);
 
-      // 如果还没有加载过详情，则加载
+      // 如果还没有加载过Details，则加载
       if (!messageDetails.has(msgId) && fileId) {
         setLoadingIds(prev => new Set(prev).add(msgId));
         try {
@@ -127,7 +127,7 @@ export default function ErrorsPage() {
         return (
           <span className="badge badge-error flex items-center gap-1">
             <AlertCircle className="w-3 h-3" />
-            RPC错误
+            RPCError
           </span>
         );
       case 'fault':
@@ -176,7 +176,7 @@ export default function ErrorsPage() {
           className="inline-flex items-center gap-2 text-dark-400 hover:text-primary-400 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          返回文件详情
+          BackFile Details
         </Link>
       </div>
 
@@ -185,10 +185,10 @@ export default function ErrorsPage() {
         <div>
           <h1 className="text-2xl font-bold text-white flex items-center gap-3">
             <AlertTriangle className="w-7 h-7 text-red-400" />
-            错误和告警
+            Errors and Alarms
           </h1>
           <p className="text-dark-400 mt-1">
-            已加载 {messages.length.toLocaleString()} 条记录 {hasMore && '(滚动加载更多)'}
+            已加载 {messages.length.toLocaleString()} 条记录 {hasMore && '(滚动Load More)'}
           </p>
         </div>
       </div>
@@ -198,7 +198,7 @@ export default function ErrorsPage() {
         <div className="flex items-center gap-4 flex-wrap">
           <div className="flex items-center gap-2">
             <Filter className="w-4 h-4 text-dark-400" />
-            <span className="text-sm text-dark-400">筛选:</span>
+            <span className="text-sm text-dark-400">Filter:</span>
           </div>
 
           <select
@@ -206,8 +206,8 @@ export default function ErrorsPage() {
             onChange={(e) => setErrorType(e.target.value)}
             className="px-3 py-1.5 bg-dark-700 border border-dark-600 rounded-lg text-sm text-white focus:outline-none focus:border-primary-500"
           >
-            <option value="">所有类型</option>
-            <option value="rpc-error">RPC 错误</option>
+            <option value="">所有Type</option>
+            <option value="rpc-error">RPC Error</option>
             <option value="fault">告警 (Fault)</option>
             <option value="warning">警告</option>
           </select>
@@ -217,7 +217,7 @@ export default function ErrorsPage() {
               onClick={() => setErrorType('')}
               className="text-sm text-dark-400 hover:text-primary-400"
             >
-              清除筛选
+              清除Filter
             </button>
           )}
         </div>
@@ -228,7 +228,7 @@ export default function ErrorsPage() {
         {messages.length === 0 && !loading ? (
           <div className="text-center py-20 text-dark-400">
             <AlertTriangle className="w-12 h-12 mx-auto mb-4 text-dark-600" />
-            <p>暂无错误或告警记录</p>
+            <p>暂无Error或告警记录</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -237,13 +237,13 @@ export default function ErrorsPage() {
                 <tr>
                   <th className="w-12"></th>
                   <th>行号</th>
-                  <th>时间</th>
-                  <th>类型</th>
-                  <th>严重程度</th>
-                  <th>错误标签</th>
-                  <th>错误消息</th>
+                  <th>Time</th>
+                  <th>Type</th>
+                  <th>Severity</th>
+                  <th>Error标签</th>
+                  <th>ErrorMessage</th>
                   <th>故障ID</th>
-                  <th>状态</th>
+                  <th>Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -277,15 +277,15 @@ export default function ErrorsPage() {
                       <td>
                         {msg.error_type === 'fault' && (
                           msg.is_cleared ? (
-                            <span className="badge badge-success">已清除</span>
+                            <span className="badge badge-success">Cleared</span>
                           ) : (
-                            <span className="badge badge-error">活动</span>
+                            <span className="badge badge-error">Active</span>
                           )
                         )}
                       </td>
                     </tr>
 
-                    {/* 展开的详情行 */}
+                    {/* Expand的Details行 */}
                     {expandedIds.has(msg.id) && (
                       <tr key={`${msg.id}-detail`} className="bg-dark-900/50">
                         <td colSpan={9} className="!p-0">
@@ -293,35 +293,35 @@ export default function ErrorsPage() {
                             {loadingIds.has(msg.id) ? (
                               <div className="flex items-center justify-center py-8">
                                 <div className="w-6 h-6 border-2 border-primary-400 border-t-transparent rounded-full animate-spin" />
-                                <span className="ml-3 text-dark-400">加载中...</span>
+                                <span className="ml-3 text-dark-400">Loading...</span>
                               </div>
                             ) : (
                               <div className="space-y-4">
-                                {/* 错误元信息 */}
+                                {/* Error元信息 */}
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                                   <div>
                                     <div className="text-xs text-dark-500 mb-1">行号</div>
                                     <div className="text-white font-mono">{msg.line_number}</div>
                                   </div>
                                   <div>
-                                    <div className="text-xs text-dark-500 mb-1">时间</div>
+                                    <div className="text-xs text-dark-500 mb-1">Time</div>
                                     <div className="text-white">
                                       {msg.timestamp ? format(new Date(msg.timestamp), 'yyyy-MM-dd HH:mm:ss.SSS') : '-'}
                                     </div>
                                   </div>
                                   <div>
-                                    <div className="text-xs text-dark-500 mb-1">类型</div>
+                                    <div className="text-xs text-dark-500 mb-1">Type</div>
                                     <div>{getErrorTypeBadge(msg.error_type)}</div>
                                   </div>
                                   {msg.error_severity && (
                                     <div>
-                                      <div className="text-xs text-dark-500 mb-1">严重程度</div>
+                                      <div className="text-xs text-dark-500 mb-1">Severity</div>
                                       <div>{getSeverityBadge(msg.error_severity)}</div>
                                     </div>
                                   )}
                                   {msg.error_tag && (
                                     <div>
-                                      <div className="text-xs text-dark-500 mb-1">错误标签</div>
+                                      <div className="text-xs text-dark-500 mb-1">Error标签</div>
                                       <div className="text-white">{msg.error_tag}</div>
                                     </div>
                                   )}
@@ -339,22 +339,22 @@ export default function ErrorsPage() {
                                   )}
                                   {msg.error_type === 'fault' && (
                                     <div>
-                                      <div className="text-xs text-dark-500 mb-1">状态</div>
+                                      <div className="text-xs text-dark-500 mb-1">Status</div>
                                       <div>
                                         {msg.is_cleared ? (
-                                          <span className="badge badge-success">已清除</span>
+                                          <span className="badge badge-success">Cleared</span>
                                         ) : (
-                                          <span className="badge badge-error">活动</span>
+                                          <span className="badge badge-error">Active</span>
                                         )}
                                       </div>
                                     </div>
                                   )}
                                 </div>
 
-                                {/* 错误消息 */}
+                                {/* ErrorMessage */}
                                 {msg.error_message && (
                                   <div>
-                                    <div className="text-xs text-dark-500 mb-2">错误消息</div>
+                                    <div className="text-xs text-dark-500 mb-2">ErrorMessage</div>
                                     <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 text-red-300">
                                       {msg.error_message}
                                     </div>
@@ -388,21 +388,21 @@ export default function ErrorsPage() {
           </div>
         )}
 
-        {/* 加载更多指示器 */}
+        {/* Load More指示器 */}
         <div ref={observerTarget} className="h-20 flex items-center justify-center border-t border-dark-700">
           {loading && (
             <div className="flex items-center gap-3 text-dark-400">
               <div className="w-5 h-5 border-2 border-primary-400 border-t-transparent rounded-full animate-spin" />
-              <span>加载中...</span>
+              <span>Loading...</span>
             </div>
           )}
           {!loading && !hasMore && messages.length > 0 && (
-            <div className="text-dark-500 text-sm">已加载全部记录</div>
+            <div className="text-dark-500 text-sm">已加载All记录</div>
           )}
         </div>
       </div>
 
-      {/* XML 语法高亮样式 */}
+      {/* XML 语法高亮Styles */}
       <style>{xmlStyles}</style>
     </div>
   );

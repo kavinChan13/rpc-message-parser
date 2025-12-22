@@ -24,7 +24,7 @@ export default function Layout() {
               </div>
               <div>
                 <h1 className="text-lg font-bold text-white">O-RAN Log Parser</h1>
-                <p className="text-xs text-dark-400">RPC 消息分析系统</p>
+                <p className="text-xs text-dark-400">RPC Message Analysis System</p>
               </div>
             </Link>
 
@@ -35,7 +35,7 @@ export default function Layout() {
                 className="flex items-center gap-2 text-dark-300 hover:text-primary-400 transition-colors"
               >
                 <Home className="w-4 h-4" />
-                <span className="text-sm">仪表盘</span>
+                <span className="text-sm">Dashboard</span>
               </Link>
             </nav>
 
@@ -50,7 +50,7 @@ export default function Layout() {
                 className="flex items-center gap-2 px-3 py-1.5 text-sm text-dark-300 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
               >
                 <LogOut className="w-4 h-4" />
-                <span>退出</span>
+                <span>Logout</span>
               </button>
             </div>
           </div>
@@ -65,7 +65,7 @@ export default function Layout() {
       {/* Footer */}
       <footer className="border-t border-dark-700 py-6 mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-dark-500 text-sm">
-          O-RAN RPC Log Parser v1.0.0 | 基于 NETCONF/YANG 协议
+          O-RAN RPC Log Parser v1.0.0 | Based on NETCONF/YANG Protocol
         </div>
       </footer>
     </div>

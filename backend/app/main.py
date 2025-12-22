@@ -27,7 +27,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION,
-    description="O-RAN RPC 消息日志解析分析系统 API",
+    description="O-RAN RPC message日志Parse分析系统 API",
     lifespan=lifespan
 )
 

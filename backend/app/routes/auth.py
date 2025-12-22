@@ -1,5 +1,5 @@
 """
-简化版认证 API - 只需用户名
+简化版Authentication API - 只需用户名
 """
 
 from datetime import timedelta
@@ -12,7 +12,7 @@ from ..schemas import UserLogin, UserResponse, Token
 from ..config import settings
 
 
-router = APIRouter(prefix="/auth", tags=["认证"])
+router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
 @router.post("/login", response_model=Token)

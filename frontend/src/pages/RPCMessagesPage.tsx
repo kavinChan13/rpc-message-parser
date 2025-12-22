@@ -12,7 +12,7 @@ export default function RPCMessagesPage() {
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
-  const pageSize = 100; // 每次加载更多条
+  const pageSize = 100; // 每次Load More条
 
   // Filters
   const [messageType, setMessageType] = useState('');
@@ -20,17 +20,17 @@ export default function RPCMessagesPage() {
   const [keyword, setKeyword] = useState('');
   const [sort, setSort] = useState<'default' | 'rt_asc' | 'rt_desc'>('default');
 
-  // 展开的消息ID集合
+  // Expand的MessageID集合
   const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
-  // 加载中的消息ID集合
+  // 加载中的MessageID集合
   const [loadingIds, setLoadingIds] = useState<Set<number>>(new Set());
-  // 已加载的消息详情缓存
+  // 已加载的MessageDetails缓存
   const [messageDetails, setMessageDetails] = useState<Map<number, RPCMessage>>(new Map());
 
   // 滚动加载监听
   const observerTarget = useRef<HTMLDivElement>(null);
 
-  // 加载消息
+  // 加载Message
   const loadMessages = useCallback(async (pageNum: number, append: boolean = false) => {
     if (!fileId) return;
     setLoading(true);
@@ -72,7 +72,7 @@ export default function RPCMessagesPage() {
     loadMessages(1, false);
   }, [fileId, messageType, direction, keyword, sort]);
 
-  // 滚动加载更多
+  // 滚动Load More
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -105,11 +105,11 @@ export default function RPCMessagesPage() {
       newExpandedIds.delete(msgId);
       setExpandedIds(newExpandedIds);
     } else {
-      // 展开
+      // Expand
       newExpandedIds.add(msgId);
       setExpandedIds(newExpandedIds);
 
-      // 如果还没有加载过详情，则加载
+      // 如果还没有加载过Details，则加载
       if (!messageDetails.has(msgId) && fileId) {
         setLoadingIds(prev => new Set(prev).add(msgId));
         try {
@@ -158,22 +158,22 @@ export default function RPCMessagesPage() {
           className="inline-flex items-center gap-2 text-dark-400 hover:text-primary-400 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          返回文件详情
+          BackFile Details
         </Link>
       </div>
 
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white">RPC 消息列表</h1>
+          <h1 className="text-2xl font-bold text-white">RPC Message List</h1>
           <p className="text-dark-400 mt-1">
             {keyword ? (
               <>
-                搜索 "<span className="text-primary-400">{keyword}</span>" 找到 {messages.length.toLocaleString()} 条消息 {hasMore && '(滚动加载更多)'}
+                Search "<span className="text-primary-400">{keyword}</span>" 找到 {messages.length.toLocaleString()} message(s) {hasMore && '(滚动Load More)'}
               </>
             ) : (
               <>
-                已加载 {messages.length.toLocaleString()} 条消息 {hasMore && '(滚动加载更多)'}
+                已加载 {messages.length.toLocaleString()} message(s) {hasMore && '(滚动Load More)'}
               </>
             )}
           </p>
@@ -185,7 +185,7 @@ export default function RPCMessagesPage() {
         <div className="flex items-center gap-4 flex-wrap">
           <div className="flex items-center gap-2">
             <Filter className="w-4 h-4 text-dark-400" />
-            <span className="text-sm text-dark-400">筛选:</span>
+            <span className="text-sm text-dark-400">Filter:</span>
           </div>
 
           <select
@@ -193,7 +193,7 @@ export default function RPCMessagesPage() {
             onChange={(e) => setMessageType(e.target.value)}
             className="px-3 py-1.5 bg-dark-700 border border-dark-600 rounded-lg text-sm text-white focus:outline-none focus:border-primary-500"
           >
-            <option value="">所有类型</option>
+            <option value="">所有Type</option>
             <option value="rpc">RPC</option>
             <option value="rpc-reply">RPC-Reply</option>
             <option value="notification">Notification</option>
@@ -204,7 +204,7 @@ export default function RPCMessagesPage() {
             onChange={(e) => setDirection(e.target.value)}
             className="px-3 py-1.5 bg-dark-700 border border-dark-600 rounded-lg text-sm text-white focus:outline-none focus:border-primary-500"
           >
-            <option value="">所有方向</option>
+            <option value="">所有Direction</option>
             <option value="DU->RU">DU → RU</option>
             <option value="RU->DU">RU → DU</option>
           </select>
@@ -215,8 +215,8 @@ export default function RPCMessagesPage() {
             className="px-3 py-1.5 bg-dark-700 border border-dark-600 rounded-lg text-sm text-white focus:outline-none focus:border-primary-500"
           >
             <option value="default">默认排序</option>
-            <option value="rt_desc">响应时间 ↓</option>
-            <option value="rt_asc">响应时间 ↑</option>
+            <option value="rt_desc">响应Time ↓</option>
+            <option value="rt_asc">响应Time ↑</option>
           </select>
 
           <div className="flex-1 min-w-[300px]">
@@ -224,14 +224,14 @@ export default function RPCMessagesPage() {
               <Search className="w-4 h-4 text-dark-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
-                placeholder="搜索 XML 内容关键字（如：edit-config、ACTIVE、carrier 名称等）..."
+                placeholder="Search XML 内容关键字（如：edit-config、ACTIVE、carrier Name等）..."
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
                 className="w-full pl-9 pr-3 py-1.5 bg-dark-700 border border-dark-600 rounded-lg text-sm text-white placeholder-dark-400 focus:outline-none focus:border-primary-500"
               />
               {keyword && (
                 <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-dark-500">
-                  按 Enter 搜索
+                  按 Enter Search
                 </div>
               )}
             </div>
@@ -247,7 +247,7 @@ export default function RPCMessagesPage() {
               }}
               className="text-sm text-dark-400 hover:text-primary-400"
             >
-              清除筛选
+              清除Filter
             </button>
           )}
         </div>
@@ -257,7 +257,7 @@ export default function RPCMessagesPage() {
       <div className="bg-dark-800/50 border border-dark-700 rounded-2xl overflow-hidden">
         {messages.length === 0 && !loading ? (
           <div className="flex items-center justify-center py-20 text-dark-400">
-            暂无数据
+            暂无Data
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -266,13 +266,13 @@ export default function RPCMessagesPage() {
                 <tr>
                   <th className="w-12"></th>
                   <th>行号</th>
-                  <th>时间</th>
-                  <th>消息ID</th>
-                  <th>方向</th>
-                  <th>类型</th>
-                  <th>操作/通知</th>
+                  <th>Time</th>
+                  <th>MessageID</th>
+                  <th>Direction</th>
+                  <th>Type</th>
+                  <th>Operation/通知</th>
                   <th>YANG 模块</th>
-                  <th>响应时间</th>
+                  <th>响应Time</th>
                 </tr>
               </thead>
               <tbody>
@@ -314,7 +314,7 @@ export default function RPCMessagesPage() {
                       </td>
                     </tr>
 
-                    {/* 展开的详情行 */}
+                    {/* Expand的Details行 */}
                     {expandedIds.has(msg.id) && (
                       <tr key={`${msg.id}-detail`} className="bg-dark-900/50">
                         <td colSpan={9} className="!p-0">
@@ -322,29 +322,29 @@ export default function RPCMessagesPage() {
                             {loadingIds.has(msg.id) ? (
                               <div className="flex items-center justify-center py-8">
                                 <div className="w-6 h-6 border-2 border-primary-400 border-t-transparent rounded-full animate-spin" />
-                                <span className="ml-3 text-dark-400">加载中...</span>
+                                <span className="ml-3 text-dark-400">Loading...</span>
                               </div>
                             ) : (
                               <div className="space-y-4">
-                                {/* 消息元信息 */}
+                                {/* Message元信息 */}
                                 <div className="flex flex-wrap gap-6 text-sm">
                                   <div>
                                     <span className="text-dark-500">行号:</span>
                                     <span className="ml-2 text-dark-300 font-mono">{msg.line_number}</span>
                                   </div>
                                   <div>
-                                    <span className="text-dark-500">消息ID:</span>
+                                    <span className="text-dark-500">MessageID:</span>
                                     <span className="ml-2 text-primary-400 font-mono">{msg.message_id || '-'}</span>
                                   </div>
                                   <div>
-                                    <span className="text-dark-500">时间:</span>
+                                    <span className="text-dark-500">Time:</span>
                                     <span className="ml-2 text-dark-300">
                                       {msg.timestamp ? format(new Date(msg.timestamp), 'yyyy-MM-dd HH:mm:ss.SSS') : '-'}
                                     </span>
                                   </div>
                                   {msg.response_time_ms && (
                                     <div>
-                                      <span className="text-dark-500">响应时间:</span>
+                                      <span className="text-dark-500">响应Time:</span>
                                       <span className={`ml-2 ${msg.response_time_ms > 100 ? 'text-amber-400' : 'text-green-400'}`}>
                                         {msg.response_time_ms.toFixed(2)} ms
                                       </span>
@@ -379,21 +379,21 @@ export default function RPCMessagesPage() {
           </div>
         )}
 
-        {/* 加载更多指示器 */}
+        {/* Load More指示器 */}
         <div ref={observerTarget} className="h-20 flex items-center justify-center border-t border-dark-700">
           {loading && (
             <div className="flex items-center gap-3 text-dark-400">
               <div className="w-5 h-5 border-2 border-primary-400 border-t-transparent rounded-full animate-spin" />
-              <span>加载中...</span>
+              <span>Loading...</span>
             </div>
           )}
           {!loading && !hasMore && messages.length > 0 && (
-            <div className="text-dark-500 text-sm">已加载全部消息</div>
+            <div className="text-dark-500 text-sm">已加载AllMessage</div>
           )}
         </div>
       </div>
 
-      {/* XML 语法高亮样式 */}
+      {/* XML 语法高亮Styles */}
       <style>{xmlStyles}</style>
     </div>
   );

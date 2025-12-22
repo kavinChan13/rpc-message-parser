@@ -15,7 +15,7 @@ from ..schemas import (
 )
 
 
-router = APIRouter(prefix="/carriers", tags=["Carrier 跟踪"])
+router = APIRouter(prefix="/carriers", tags=["Carrier Tracking"])
 
 
 @router.get("/{file_id}/events", response_model=CarrierEventList)
@@ -23,14 +23,14 @@ async def get_carrier_events(
     file_id: int,
     page: int = Query(1, ge=1),
     page_size: int = Query(50, ge=1, le=1000),
-    carrier_type: Optional[str] = Query(None, description="carrier 类型: rx-array-carriers, tx-array-carriers, etc."),
-    event_type: Optional[str] = Query(None, description="事件类型: create, update, delete, state-change, query, data"),
-    carrier_name: Optional[str] = Query(None, description="carrier 名称"),
-    direction: Optional[str] = Query(None, description="消息方向: DU->RU, RU->DU"),
+    carrier_type: Optional[str] = Query(None, description="Carrier type: rx-array-carriers, tx-array-carriers, etc."),
+    event_type: Optional[str] = Query(None, description="Event type: create, update, delete, state-change, query, data"),
+    carrier_name: Optional[str] = Query(None, description="Carrier name"),
+    direction: Optional[str] = Query(None, description="Message direction: DU->RU, RU->DU"),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """获取 Carrier 事件列表"""
+    """获取 Carrier event列表"""
     # Verify file ownership
     file_result = await db.execute(
         select(LogFile)
@@ -85,7 +85,7 @@ async def get_carrier_event_detail(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """获取 Carrier 事件详情"""
+    """获取 Carrier event详情"""
     # Verify file ownership
     file_result = await db.execute(
         select(LogFile)
@@ -113,7 +113,7 @@ async def get_carrier_statistics(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """获取 Carrier 统计信息"""
+    """获取 Carrier Statistics"""
     # Verify file ownership
     file_result = await db.execute(
         select(LogFile)

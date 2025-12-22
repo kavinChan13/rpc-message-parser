@@ -43,7 +43,7 @@ export default function FileDetailPage() {
   if (!file || !stats) {
     return (
       <div className="text-center py-20 text-dark-400">
-        文件不存在或加载失败
+        File not found or failed to load
       </div>
     );
   }
@@ -63,7 +63,7 @@ export default function FileDetailPage() {
           className="inline-flex items-center gap-2 text-dark-400 hover:text-primary-400 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          返回文件列表
+          Back to File List
         </Link>
       </div>
 
@@ -94,25 +94,25 @@ export default function FileDetailPage() {
           <div className="text-3xl font-bold text-primary-400">
             {stats.total_messages.toLocaleString()}
           </div>
-          <div className="text-dark-400 text-sm mt-1">总消息数</div>
+          <div className="text-dark-400 text-sm mt-1">总Message数</div>
         </div>
         <div className="bg-dark-800/50 border border-dark-700 rounded-xl p-5">
           <div className="text-3xl font-bold text-blue-400">
             {stats.rpc_count.toLocaleString()}
           </div>
-          <div className="text-dark-400 text-sm mt-1">RPC 请求</div>
+          <div className="text-dark-400 text-sm mt-1">RPC Requests</div>
         </div>
         <div className="bg-dark-800/50 border border-dark-700 rounded-xl p-5">
           <div className="text-3xl font-bold text-purple-400">
             {stats.notification_count.toLocaleString()}
           </div>
-          <div className="text-dark-400 text-sm mt-1">通知消息</div>
+          <div className="text-dark-400 text-sm mt-1">Notifications</div>
         </div>
         <div className="bg-dark-800/50 border border-dark-700 rounded-xl p-5">
           <div className="text-3xl font-bold text-red-400">
             {stats.error_count}
           </div>
-          <div className="text-dark-400 text-sm mt-1">错误/告警</div>
+          <div className="text-dark-400 text-sm mt-1">Errors/Alarms</div>
         </div>
       </div>
 
@@ -128,9 +128,9 @@ export default function FileDetailPage() {
                 <MessageSquare className="w-6 h-6 text-blue-400" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-white">RPC 消息列表</h3>
+                <h3 className="text-lg font-semibold text-white">RPC Message List</h3>
                 <p className="text-dark-400 text-sm mt-1">
-                  查看所有 RPC、响应和通知消息
+                  View all RPC requests, responses and notifications
                 </p>
               </div>
             </div>
@@ -145,11 +145,11 @@ export default function FileDetailPage() {
             </div>
             <div>
               <div className="text-lg font-semibold text-white">{stats.rpc_reply_count}</div>
-              <div className="text-xs text-dark-400">响应</div>
+              <div className="text-xs text-dark-400">Responses</div>
             </div>
             <div>
               <div className="text-lg font-semibold text-white">{stats.notification_count}</div>
-              <div className="text-xs text-dark-400">通知</div>
+              <div className="text-xs text-dark-400">Notifications</div>
             </div>
           </div>
         </Link>
@@ -164,9 +164,9 @@ export default function FileDetailPage() {
                 <AlertTriangle className="w-6 h-6 text-red-400" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-white">错误和告警</h3>
+                <h3 className="text-lg font-semibold text-white">Errors and Alarms</h3>
                 <p className="text-dark-400 text-sm mt-1">
-                  查看错误回复、fault 上报等
+                  View error replies, fault reports, etc.
                 </p>
               </div>
             </div>
@@ -176,11 +176,11 @@ export default function FileDetailPage() {
           <div className="grid grid-cols-2 gap-4 mt-6 pt-6 border-t border-dark-700">
             <div>
               <div className="text-lg font-semibold text-white">{stats.error_count}</div>
-              <div className="text-xs text-dark-400">错误</div>
+              <div className="text-xs text-dark-400">Error</div>
             </div>
             <div>
               <div className="text-lg font-semibold text-white">{stats.fault_count}</div>
-              <div className="text-xs text-dark-400">告警</div>
+              <div className="text-xs text-dark-400">Alarms</div>
             </div>
           </div>
         </Link>
@@ -195,9 +195,9 @@ export default function FileDetailPage() {
                 <Radio className="w-6 h-6 text-green-400" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-white">Carrier 跟踪</h3>
+                <h3 className="text-lg font-semibold text-white">Carrier Tracking</h3>
                 <p className="text-dark-400 text-sm mt-1">
-                  跟踪 RX/TX Array Carriers 等
+                  Track RX/TX Array Carriers, etc.
                 </p>
               </div>
             </div>
@@ -206,7 +206,7 @@ export default function FileDetailPage() {
 
           <div className="mt-6 pt-6 border-t border-dark-700">
             <div className="text-xs text-dark-400">
-              包括 array-carriers、low-level-endpoints、low-level-links 的创建、更新、删除和状态变化
+              Including Create, Update, Delete and State Change for array-carriers, low-level-endpoints, low-level-links
             </div>
           </div>
         </Link>
@@ -217,26 +217,26 @@ export default function FileDetailPage() {
         <div className="bg-dark-800/50 border border-dark-700 rounded-2xl p-6 mb-8">
           <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
             <Clock className="w-5 h-5 text-primary-400" />
-            响应时间统计
+            Response Time Statistics
           </h3>
           <div className="grid grid-cols-3 gap-6">
             <div>
               <div className="text-2xl font-bold text-green-400">
                 {stats.min_response_time_ms?.toFixed(2)} ms
               </div>
-              <div className="text-dark-400 text-sm">最小</div>
+              <div className="text-dark-400 text-sm">Minimum</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-primary-400">
                 {stats.avg_response_time_ms?.toFixed(2)} ms
               </div>
-              <div className="text-dark-400 text-sm">平均</div>
+              <div className="text-dark-400 text-sm">Average</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-amber-400">
                 {stats.max_response_time_ms?.toFixed(2)} ms
               </div>
-              <div className="text-dark-400 text-sm">最大</div>
+              <div className="text-dark-400 text-sm">Maximum</div>
             </div>
           </div>
         </div>
@@ -247,7 +247,7 @@ export default function FileDetailPage() {
         <div className="bg-dark-800/50 border border-dark-700 rounded-2xl p-6">
           <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
             <BarChart3 className="w-5 h-5 text-primary-400" />
-            操作类型分布
+            Operation Type Distribution
           </h3>
           <div className="space-y-3">
             {Object.entries(stats.operation_stats)
@@ -277,7 +277,7 @@ export default function FileDetailPage() {
         <div className="bg-dark-800/50 border border-dark-700 rounded-2xl p-6">
           <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
             <ArrowDown className="w-5 h-5 text-primary-400" />
-            消息流向分布
+            Message Direction Distribution
           </h3>
           <div className="space-y-4">
             {Object.entries(stats.direction_stats).map(([dir, count]) => {

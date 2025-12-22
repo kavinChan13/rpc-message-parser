@@ -1,14 +1,14 @@
 /**
  * XML Viewer Component with Syntax Highlighting
- * 用于格式化并高亮显示 XML 内容的共享组件
+ * Used forFormat and highlight XML content shared component
  */
 
-// XML 格式化函数
+// XML formatting function
 export function formatXml(xml: string): string {
   if (!xml) return '';
 
   try {
-    // 移除多余空白，但保留换行结构
+    // Remove extra whitespace, but preserve line structure
     let formatted = xml.replace(/>\s+</g, '>\n<');
 
     const PADDING = '  ';
@@ -19,32 +19,32 @@ export function formatXml(xml: string): string {
       const trimmed = line.trim();
       if (!trimmed) return;
 
-      // 处理一行中的多个标签
+      // Handle multiple tags in one line
       const parts = trimmed.split(/(?<=>)(?=<)/);
 
       parts.forEach((part) => {
         const p = part.trim();
         if (!p) return;
 
-        // 结束标签
+        // Closing tag
         if (p.match(/^<\/[^>]+>$/)) {
           pad = Math.max(0, pad - 1);
           lines.push(PADDING.repeat(pad) + p);
         }
-        // 自闭合标签
+        // Self-closing tag
         else if (p.match(/^<[^>]+\/>$/)) {
           lines.push(PADDING.repeat(pad) + p);
         }
-        // 开始和结束在同一行 <tag>content</tag>
+        // Opening and closing on the same line <tag>content</tag>
         else if (p.match(/^<[^\/][^>]*>[^<]+<\/[^>]+>$/)) {
           lines.push(PADDING.repeat(pad) + p);
         }
-        // 开始标签
+        // Opening tag
         else if (p.match(/^<[^\/][^>]*>$/)) {
           lines.push(PADDING.repeat(pad) + p);
           pad++;
         }
-        // 纯文本或其他
+        // Plain text or other
         else {
           lines.push(PADDING.repeat(pad) + p);
         }
@@ -57,7 +57,7 @@ export function formatXml(xml: string): string {
   }
 }
 
-// Token 类型
+// Token Type
 type TokenType = 'bracket' | 'tag' | 'attr' | 'value' | 'text' | 'equals' | 'quote';
 
 interface Token {
@@ -65,13 +65,13 @@ interface Token {
   value: string;
 }
 
-// 解析 XML 行为 tokens
+// Parse XML as tokens
 function tokenizeLine(line: string): Token[] {
   const tokens: Token[] = [];
   let i = 0;
 
   while (i < line.length) {
-    // 空格 - 作为文本处理
+    // Space - treat as text
     if (line[i] === ' ' || line[i] === '\t') {
       let space = '';
       while (i < line.length && (line[i] === ' ' || line[i] === '\t')) {
@@ -98,7 +98,7 @@ function tokenizeLine(line: string): Token[] {
         i++;
       }
 
-      // 读取标签名
+      // Read tag name
       let tagName = '';
       while (i < line.length && /[\w:-]/.test(line[i])) {
         tagName += line[i];
@@ -129,14 +129,14 @@ function tokenizeLine(line: string): Token[] {
       continue;
     }
 
-    // = 符号
+    // = symbol
     if (line[i] === '=') {
       tokens.push({ type: 'equals', value: '=' });
       i++;
       continue;
     }
 
-    // 引号内的值
+    // Value within quotes
     if (line[i] === '"') {
       tokens.push({ type: 'quote', value: '"' });
       i++;
@@ -155,14 +155,14 @@ function tokenizeLine(line: string): Token[] {
       continue;
     }
 
-    // 属性名 (在标签内，非引号内的标识符)
+    // Attribute name (Identifier inside tag, outside quotes)
     if (/[\w:-]/.test(line[i])) {
       let name = '';
       while (i < line.length && /[\w:-]/.test(line[i])) {
         name += line[i];
         i++;
       }
-      // 检查后面是否有 =，如果有则是属性名
+      // Check if followed by =，if so, then it'sAttribute name
       if (line[i] === '=') {
         tokens.push({ type: 'attr', value: name });
       } else {
@@ -171,7 +171,7 @@ function tokenizeLine(line: string): Token[] {
       continue;
     }
 
-    // 其他字符作为文本
+    // Other characters as text
     tokens.push({ type: 'text', value: line[i] });
     i++;
   }
@@ -179,7 +179,7 @@ function tokenizeLine(line: string): Token[] {
   return tokens;
 }
 
-// XML 语法高亮组件
+// XML Syntax highlighting component
 export function XmlHighlight({ xml }: { xml: string }) {
   const formatted = formatXml(xml);
   const lines = formatted.split('\n');
@@ -218,7 +218,7 @@ export function XmlHighlight({ xml }: { xml: string }) {
   );
 }
 
-// XML 样式（作为全局样式注入）
+// XML Styles（作为全局Styles注入）
 export const xmlStyles = `
   .xml-content {
     margin: 0;

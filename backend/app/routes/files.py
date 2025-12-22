@@ -23,7 +23,7 @@ from ..config import settings
 from ..parser_service import LogParserService
 
 
-router = APIRouter(prefix="/files", tags=["文件管理"])
+router = APIRouter(prefix="/files", tags=["File Management"])
 
 
 def is_rpc_log_file(filename: str) -> bool:
@@ -52,7 +52,7 @@ def extract_archive_recursive(archive_path: Path, extract_to: Path) -> List[Dict
     rpc_files = []
 
     def process_directory(directory: Path, relative_base: str = ""):
-        """处理目录，查找RPC文件和嵌套压缩包"""
+        """Process目录，查找RPC文件和嵌套压缩包"""
         for item in directory.iterdir():
             if item.is_file():
                 relative_path = f"{relative_base}/{item.name}" if relative_base else item.name
@@ -93,13 +93,13 @@ def extract_archive_recursive(archive_path: Path, extract_to: Path) -> List[Dict
                                     "size": file_size
                                 })
                             elif extracted_file.suffix.lower() in ['.zip', '.tar', '.gz', '.tgz', '.bz2']:
-                                # 如果解压后还是压缩文件，继续处理
+                                # 如果解压后还是压缩文件，继续Process
                                 process_directory(nested_extract_dir, relative_path)
                         elif item.suffix.lower() in ['.tar', '.gz', '.tgz', '.bz2']:
                             with tarfile.open(item, 'r:*') as tf:
                                 tf.extractall(nested_extract_dir)
 
-                        # 递归处理解压后的目录（除了已经处理的.xz文件）
+                        # 递归Process解压后的目录（除了已经Process的.xz文件）
                         if item.suffix.lower() != '.xz':
                             process_directory(nested_extract_dir, f"{relative_path}")
                     except Exception as e:
@@ -109,7 +109,7 @@ def extract_archive_recursive(archive_path: Path, extract_to: Path) -> List[Dict
                 relative_path = f"{relative_base}/{item.name}" if relative_base else item.name
                 process_directory(item, relative_path)
 
-    # 开始处理
+    # 开始Process
     process_directory(extract_to)
     return rpc_files
 
@@ -179,7 +179,7 @@ async def upload_file(
             if file_size > settings.MAX_FILE_SIZE:
                 raise HTTPException(
                     status_code=400,
-                    detail=f"文件大小超过限制 ({settings.MAX_FILE_SIZE // 1024 // 1024}MB)"
+                    detail=f"File size超过限制 ({settings.MAX_FILE_SIZE // 1024 // 1024}MB)"
                 )
 
             # 保存文件
@@ -211,7 +211,7 @@ async def upload_file(
         # 清理临时目录
         if temp_extract_dir.exists():
             shutil.rmtree(temp_extract_dir)
-        raise HTTPException(status_code=500, detail=f"处理文件时出错: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Process文件时出错: {str(e)}")
 
 
 @router.post("/parse-selected", response_model=List[LogFileResponse])
@@ -221,7 +221,7 @@ async def parse_selected_files(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """解析用户选择的文件"""
+    """Parse用户选择的文件"""
     temp_dir = Path(request.temp_directory)
 
     if not temp_dir.exists():
@@ -252,7 +252,7 @@ async def parse_selected_files(
             permanent_path = user_upload_dir / unique_filename
             shutil.copy2(file_path, permanent_path)
 
-            # 创建数据库记录
+            # 创建Database记录
             log_file = LogFile(
                 filename=unique_filename,
                 original_filename=f"{request.original_filename}:{file_info['relative_path']}",
@@ -267,7 +267,7 @@ async def parse_selected_files(
 
             created_files.append(log_file)
 
-            # 启动后台解析
+            # 启动后台Parse
             background_tasks.add_task(parse_file_background, log_file.id)
 
         await db.commit()
@@ -293,7 +293,7 @@ def cleanup_temp_directory(temp_dir: str):
 
 
 async def parse_file_background(file_id: int):
-    """后台解析文件"""
+    """后台Parse文件"""
     from ..database import async_session
 
     async with async_session() as db:

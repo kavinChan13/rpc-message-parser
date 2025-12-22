@@ -14,24 +14,24 @@ import json
 
 
 class LogParserService:
-    """日志解析服务"""
+    """Log parsing service"""
 
-    # 日志行正则表达式
+    # Log line regex pattern
     LOG_LINE_PATTERN = re.compile(
-        r'^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z)\s+'  # 时间戳
-        r'(\w+):\s+'  # 日志级别
-        r'\[([^\]]+)\]\s+'  # 主机地址
-        r'Session\s+(\d+):\s+'  # 会话ID
-        r'(.+)$'  # 消息内容
+        r'^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z)\s+'  # Timestamp
+        r'(\w+):\s+'  # Log level
+        r'\[([^\]]+)\]\s+'  # Host address
+        r'Session\s+(\d+):\s+'  # SessionID
+        r'(.+)$'  # Message content
     )
 
-    # 消息方向正则
+    # Message direction regex
     MESSAGE_DIRECTION_PATTERN = re.compile(
         r'(Sending|Received)\s+message:(.+)',
         re.DOTALL
     )
 
-    # YANG 模块命名空间映射
+    # YANG Module namespace mapping
     YANG_MODULES = {
         'urn:ietf:params:xml:ns:netconf:base:1.0': 'ietf-netconf',
         'urn:o-ran:supervision:1.0': 'o-ran-supervision',
@@ -51,7 +51,7 @@ class LogParserService:
         'urn:nokia.com:ran:ru:fcp-triggered-captures:1.0': 'nokia-ran-ru-fcp',
     }
 
-    # Carrier 相关的元素名称
+    # Carrier Related element names
     CARRIER_ELEMENTS = {
         'rx-array-carriers': 'RX Array Carrier',
         'tx-array-carriers': 'TX Array Carrier',
@@ -325,7 +325,7 @@ class LogParserService:
         return message_data
 
     def _parse_line(self, line: str, line_number: int) -> Optional[Dict[str, Any]]:
-        """解析单行日志"""
+        """Parse single log line"""
         match = self.LOG_LINE_PATTERN.match(line)
         if not match:
             return None
@@ -382,8 +382,8 @@ class LogParserService:
 
     def _extract_yang_modules_from_element(self, element: Any, depth: int = 0) -> List[str]:
         """
-        递归提取元素中的所有 YANG 模块命名空间
-        返回找到的所有具体 YANG 模块列表
+        Recursively extract all YANG module命名空间
+        Return all found specific YANG module list
         """
         modules = []
         if not isinstance(element, dict) or depth > 10:
@@ -391,21 +391,21 @@ class LogParserService:
 
         for key, value in element.items():
             if key == '@xmlns':
-                # 直接的命名空间声明
+                # Direct namespace declaration
                 ns = value
                 if ns and ns not in ['urn:ietf:params:xml:ns:netconf:base:1.0']:
                     module = self.YANG_MODULES.get(ns, ns)
                     if module:
                         modules.append(module)
             elif key.startswith('@xmlns:'):
-                # 前缀命名空间声明
+                # Prefix namespace declaration
                 ns = value
                 if ns and ns not in ['urn:ietf:params:xml:ns:netconf:base:1.0']:
                     module = self.YANG_MODULES.get(ns, ns)
                     if module:
                         modules.append(module)
             elif not key.startswith('@'):
-                # 递归处理子元素
+                # Recursively process child elements
                 if isinstance(value, dict):
                     modules.extend(self._extract_yang_modules_from_element(value, depth + 1))
                 elif isinstance(value, list):
@@ -416,50 +416,50 @@ class LogParserService:
 
     def _get_specific_yang_modules(self, operation: str, op_value: Any) -> Optional[str]:
         """
-        根据操作类型获取更具体的 YANG 模块
-        对于 get/get-config/edit-config 等操作，深入 filter/config 内部查找
+        Get more specific based on operation type YANG module
+        For get/get-config/edit-config etc operations, deep dive into filter/config internal search
         """
         if not isinstance(op_value, dict):
             return None
 
-        # 首先检查操作本身的命名空间
+        # First check operation's own namespace
         direct_ns = op_value.get('@xmlns', '')
         if direct_ns and direct_ns not in ['urn:ietf:params:xml:ns:netconf:base:1.0']:
             direct_module = self.YANG_MODULES.get(direct_ns, direct_ns)
             if direct_module:
                 return direct_module
 
-        # 对于特定操作，深入查找具体的 YANG 模块
+        # For特定操作，深入查找具体的 YANG module
         target_elements = []
 
         if operation == 'get':
-            # get 操作查找 filter 内部
+            # get operation search filter 内部
             filter_elem = op_value.get('filter', {})
             if isinstance(filter_elem, dict):
                 target_elements.append(filter_elem)
         elif operation == 'get-config':
-            # get-config 操作查找 filter 内部
+            # get-config operation search filter 内部
             filter_elem = op_value.get('filter', {})
             if isinstance(filter_elem, dict):
                 target_elements.append(filter_elem)
         elif operation == 'edit-config':
-            # edit-config 操作查找 config 内部
+            # edit-config operation search config 内部
             config_elem = op_value.get('config', {})
             if isinstance(config_elem, dict):
                 target_elements.append(config_elem)
         elif operation == 'action':
-            # action 操作直接查找
+            # action operation direct search
             target_elements.append(op_value)
         else:
-            # 其他操作直接查找
+            # 其他operation direct search
             target_elements.append(op_value)
 
-        # 从目标元素中提取所有 YANG 模块
+        # Extract all from target element YANG module
         all_modules = []
         for elem in target_elements:
             all_modules.extend(self._extract_yang_modules_from_element(elem))
 
-        # 去重并过滤掉基础 netconf 模块
+        # Deduplicate and filter out basic netconf module
         unique_modules = []
         seen = set()
         for m in all_modules:
@@ -468,13 +468,13 @@ class LogParserService:
                 unique_modules.append(m)
 
         if unique_modules:
-            # 返回所有找到的具体模块，用逗号分隔
-            return ', '.join(unique_modules[:3])  # 最多显示3个模块
+            # 返回所有找到的具体module，用逗号分隔
+            return ', '.join(unique_modules[:3])  # 最多显示3个module
 
         return None
 
     def _process_rpc(self, result: Dict[str, Any], xml_dict: Dict):
-        """处理 RPC 请求"""
+        """Process RPC Request"""
         rpc = xml_dict.get('rpc', {})
         message_id = rpc.get('@message-id')
 
@@ -486,9 +486,9 @@ class LogParserService:
             if not key.startswith('@'):
                 operation = key
                 if isinstance(value, dict):
-                    # 尝试获取更具体的 YANG 模块
+                    # Try to get more specific YANG module
                     yang_module = self._get_specific_yang_modules(key, value)
-                    # 如果没有找到具体模块，回退到直接的命名空间
+                    # 如果没有找到具体module，回退到直接的命名空间
                     if not yang_module:
                         ns = value.get('@xmlns', '')
                         yang_module = self.YANG_MODULES.get(ns, ns) if ns else None
@@ -519,7 +519,7 @@ class LogParserService:
             self.pending_requests[f"{result['session_id']}:{message_id}"] = rpc_msg
 
     def _process_rpc_reply(self, result: Dict[str, Any], xml_dict: Dict):
-        """处理 RPC 响应"""
+        """Process RPC Response"""
         reply = xml_dict.get('rpc-reply', {})
         message_id = reply.get('@message-id')
 
@@ -558,7 +558,7 @@ class LogParserService:
         for key, value in reply.items():
             if key not in ['@message-id', '@xmlns', 'ok', 'rpc-error']:
                 if key == 'data':
-                    # data 元素内部包含具体的 YANG 模块
+                    # data 元素内部包含具体的 YANG module
                     operation = 'data'
                     if isinstance(value, dict):
                         modules = self._extract_yang_modules_from_element(value)
@@ -573,7 +573,7 @@ class LogParserService:
                 else:
                     operation = key
                     if isinstance(value, dict):
-                        # 尝试获取更具体的 YANG 模块
+                        # Try to get more specific YANG module
                         yang_module = self._get_specific_yang_modules(key, value)
                         if not yang_module:
                             ns = value.get('@xmlns', '')
@@ -614,7 +614,7 @@ class LogParserService:
                 del self.pending_requests[key]
 
     def _process_notification(self, result: Dict[str, Any], xml_dict: Dict):
-        """处理通知消息"""
+        """ProcessNotification消息"""
         notif = xml_dict.get('notification', {})
 
         # Find notification type and namespace
@@ -625,7 +625,7 @@ class LogParserService:
             if key not in ['@xmlns', 'eventTime']:
                 notif_type = key
                 if isinstance(value, dict):
-                    # 尝试获取更具体的 YANG 模块
+                    # Try to get more specific YANG module
                     yang_module = self._get_specific_yang_modules(key, value)
                     if not yang_module:
                         ns = value.get('@xmlns', '')
@@ -647,7 +647,7 @@ class LogParserService:
 
         self.rpc_messages.append(rpc_msg)
 
-        # 提取 Carrier 相关事件 (状态变化通知等)
+        # 提取 Carrier 相关事件 (状态变化Notification等)
         result['message_type'] = 'notification'
         self._extract_carrier_events(result, xml_dict, notif_type or 'notification', rpc_msg)
 
@@ -657,7 +657,7 @@ class LogParserService:
             self._process_alarm_notification(result, notif.get('alarm-notif', {}))
 
     def _process_alarm_notification(self, result: Dict[str, Any], alarm: Dict):
-        """处理告警通知"""
+        """Process告警Notification"""
         err_msg = ErrorMessage(
             log_file_id=self.log_file.id,
             line_number=result['line_number'],
@@ -675,7 +675,7 @@ class LogParserService:
         self.error_messages.append(err_msg)
 
     def _extract_error_message(self, error: Dict) -> Optional[str]:
-        """提取错误消息"""
+        """提取Error message"""
         msg = error.get('error-message')
         if isinstance(msg, dict):
             return msg.get('#text', str(msg))
@@ -687,7 +687,7 @@ class LogParserService:
         从 XML 内容中提取 Carrier 相关事件
         检测 array-carriers, low-level-links, low-level-endpoints 等
         """
-        # 根据消息类型确定要搜索的内容
+        # 根据Message type确定要搜索的内容
         content_to_search = None
         event_type = None
 

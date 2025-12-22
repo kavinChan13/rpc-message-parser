@@ -1,5 +1,5 @@
 """
-简化版认证模块 - 只需用户名，无需密码
+简化版Authenticationmodule - 只需用户名，无需密码
 """
 
 from datetime import datetime, timedelta
