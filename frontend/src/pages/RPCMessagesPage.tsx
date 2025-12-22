@@ -12,7 +12,7 @@ export default function RPCMessagesPage() {
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
-  const pageSize = 100; // 每次Load More条
+  const pageSize = 100; // Load more count per request
 
   // Filters
   const [messageType, setMessageType] = useState('');
@@ -20,7 +20,7 @@ export default function RPCMessagesPage() {
   const [keyword, setKeyword] = useState('');
   const [sort, setSort] = useState<'default' | 'rt_asc' | 'rt_desc'>('default');
 
-  // Expand的MessageID集合
+  // Expanded message ID set
   const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
   // Loading message ID set
   const [loadingIds, setLoadingIds] = useState<Set<number>>(new Set());
@@ -30,7 +30,7 @@ export default function RPCMessagesPage() {
   // Scroll loading listener
   const observerTarget = useRef<HTMLDivElement>(null);
 
-  // 加载Message
+  // Load messages
   const loadMessages = useCallback(async (pageNum: number, append: boolean = false) => {
     if (!fileId) return;
     setLoading(true);
@@ -72,7 +72,7 @@ export default function RPCMessagesPage() {
     loadMessages(1, false);
   }, [fileId, messageType, direction, keyword, sort]);
 
-  // 滚动Load More
+  // Scroll to load more
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -101,7 +101,7 @@ export default function RPCMessagesPage() {
     const newExpandedIds = new Set(expandedIds);
 
     if (expandedIds.has(msgId)) {
-      // 折叠
+      // Collapse
       newExpandedIds.delete(msgId);
       setExpandedIds(newExpandedIds);
     } else {
@@ -133,9 +133,9 @@ export default function RPCMessagesPage() {
       case 'rpc':
         return <span className="badge badge-rpc">RPC</span>;
       case 'rpc-reply':
-        return <span className="badge badge-reply">响应</span>;
+        return <span className="badge badge-reply">Reply</span>;
       case 'notification':
-        return <span className="badge badge-notification">通知</span>;
+        return <span className="badge badge-notification">Notification</span>;
       default:
         return <span className="badge">{type}</span>;
     }
@@ -169,7 +169,7 @@ export default function RPCMessagesPage() {
           <p className="text-dark-400 mt-1">
             {keyword ? (
               <>
-                Search "<span className="text-primary-400">{keyword}</span>" 找到 {messages.length.toLocaleString()} message(s) {hasMore && '(滚动Load More)'}
+                Search "<span className="text-primary-400">{keyword}</span>" found {messages.length.toLocaleString()} message(s) {hasMore && '(scroll to load more)'}
               </>
             ) : (
               <>
@@ -193,7 +193,7 @@ export default function RPCMessagesPage() {
             onChange={(e) => setMessageType(e.target.value)}
             className="px-3 py-1.5 bg-dark-700 border border-dark-600 rounded-lg text-sm text-white focus:outline-none focus:border-primary-500"
           >
-            <option value="">所有Type</option>
+            <option value="">All Types</option>
             <option value="rpc">RPC</option>
             <option value="rpc-reply">RPC-Reply</option>
             <option value="notification">Notification</option>
@@ -204,7 +204,7 @@ export default function RPCMessagesPage() {
             onChange={(e) => setDirection(e.target.value)}
             className="px-3 py-1.5 bg-dark-700 border border-dark-600 rounded-lg text-sm text-white focus:outline-none focus:border-primary-500"
           >
-            <option value="">所有Direction</option>
+            <option value="">All Directions</option>
             <option value="DU->RU">DU → RU</option>
             <option value="RU->DU">RU → DU</option>
           </select>
@@ -214,9 +214,9 @@ export default function RPCMessagesPage() {
             onChange={(e) => setSort(e.target.value as any)}
             className="px-3 py-1.5 bg-dark-700 border border-dark-600 rounded-lg text-sm text-white focus:outline-none focus:border-primary-500"
           >
-            <option value="default">默认排序</option>
-            <option value="rt_desc">响应Time ↓</option>
-            <option value="rt_asc">响应Time ↑</option>
+            <option value="default">Default Sort</option>
+            <option value="rt_desc">Response Time ↓</option>
+            <option value="rt_asc">Response Time ↑</option>
           </select>
 
           <div className="flex-1 min-w-[300px]">
@@ -224,14 +224,14 @@ export default function RPCMessagesPage() {
               <Search className="w-4 h-4 text-dark-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
-                placeholder="Search XML 内容关键字（如：edit-config、ACTIVE、carrier Name等）..."
+                placeholder="Search XML content by keyword (e.g., edit-config, ACTIVE, carrier name, etc.)..."
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
                 className="w-full pl-9 pr-3 py-1.5 bg-dark-700 border border-dark-600 rounded-lg text-sm text-white placeholder-dark-400 focus:outline-none focus:border-primary-500"
               />
               {keyword && (
                 <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-dark-500">
-                  按 Enter Search
+                  Press Enter to search
                 </div>
               )}
             </div>
@@ -247,7 +247,7 @@ export default function RPCMessagesPage() {
               }}
               className="text-sm text-dark-400 hover:text-primary-400"
             >
-              清除Filter
+              Clear Filter
             </button>
           )}
         </div>
@@ -257,7 +257,7 @@ export default function RPCMessagesPage() {
       <div className="bg-dark-800/50 border border-dark-700 rounded-2xl overflow-hidden">
         {messages.length === 0 && !loading ? (
           <div className="flex items-center justify-center py-20 text-dark-400">
-            暂无Data
+            No Data
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -265,14 +265,14 @@ export default function RPCMessagesPage() {
               <thead>
                 <tr>
                   <th className="w-12"></th>
-                  <th>行号</th>
+                  <th>Line</th>
                   <th>Time</th>
                   <th>MessageID</th>
                   <th>Direction</th>
                   <th>Type</th>
-                  <th>Operation/通知</th>
-                  <th>YANG 模块</th>
-                  <th>响应Time</th>
+                  <th>Operation/Notification</th>
+                  <th>YANG Module</th>
+                  <th>Response Time</th>
                 </tr>
               </thead>
               <tbody>
@@ -314,7 +314,7 @@ export default function RPCMessagesPage() {
                       </td>
                     </tr>
 
-                    {/* Expand的Details行 */}
+                    {/* Expanded details row */}
                     {expandedIds.has(msg.id) && (
                       <tr key={`${msg.id}-detail`} className="bg-dark-900/50">
                         <td colSpan={9} className="!p-0">
@@ -326,10 +326,10 @@ export default function RPCMessagesPage() {
                               </div>
                             ) : (
                               <div className="space-y-4">
-                                {/* Message元信息 */}
+                                {/* Message metadata */}
                                 <div className="flex flex-wrap gap-6 text-sm">
                                   <div>
-                                    <span className="text-dark-500">行号:</span>
+                                    <span className="text-dark-500">Line:</span>
                                     <span className="ml-2 text-dark-300 font-mono">{msg.line_number}</span>
                                   </div>
                                   <div>
@@ -344,7 +344,7 @@ export default function RPCMessagesPage() {
                                   </div>
                                   {msg.response_time_ms && (
                                     <div>
-                                      <span className="text-dark-500">响应Time:</span>
+                                      <span className="text-dark-500">Response Time:</span>
                                       <span className={`ml-2 ${msg.response_time_ms > 100 ? 'text-amber-400' : 'text-green-400'}`}>
                                         {msg.response_time_ms.toFixed(2)} ms
                                       </span>
@@ -352,17 +352,17 @@ export default function RPCMessagesPage() {
                                   )}
                                 </div>
 
-                                {/* XML 内容 */}
+                                {/* XML content */}
                                 <div>
                                   <div className="flex items-center gap-2 mb-2">
-                                    <span className="text-xs text-dark-500 uppercase tracking-wider">XML 内容</span>
+                                    <span className="text-xs text-dark-500 uppercase tracking-wider">XML Content</span>
                                     <div className="flex-1 h-px bg-dark-700"></div>
                                   </div>
                                   <div className="bg-dark-950 border border-dark-700 rounded-xl overflow-hidden">
                                     {messageDetails.has(msg.id) && messageDetails.get(msg.id)?.xml_content ? (
                                       <XmlHighlight xml={messageDetails.get(msg.id)!.xml_content || ''} />
                                     ) : (
-                                      <div className="p-4 text-dark-500 text-sm">无 XML 内容</div>
+                                      <div className="p-4 text-dark-500 text-sm">No XML content</div>
                                     )}
                                   </div>
                                 </div>
@@ -379,7 +379,7 @@ export default function RPCMessagesPage() {
           </div>
         )}
 
-        {/* Load More指示器 */}
+        {/* Load more indicator */}
         <div ref={observerTarget} className="h-20 flex items-center justify-center border-t border-dark-700">
           {loading && (
             <div className="flex items-center gap-3 text-dark-400">
@@ -388,12 +388,12 @@ export default function RPCMessagesPage() {
             </div>
           )}
           {!loading && !hasMore && messages.length > 0 && (
-            <div className="text-dark-500 text-sm">已加载AllMessage</div>
+            <div className="text-dark-500 text-sm">All messages loaded</div>
           )}
         </div>
       </div>
 
-      {/* XML 语法高亮Styles */}
+      {/* XML syntax highlighting styles */}
       <style>{xmlStyles}</style>
     </div>
   );

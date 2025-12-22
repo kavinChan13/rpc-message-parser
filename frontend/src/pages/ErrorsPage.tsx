@@ -17,7 +17,7 @@ export default function ErrorsPage() {
   // Filters
   const [errorType, setErrorType] = useState('');
 
-  // Expand的MessageID集合
+  // Expanded message ID set
   const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
   // Loading message ID set
   const [loadingIds, setLoadingIds] = useState<Set<number>>(new Set());
@@ -27,7 +27,7 @@ export default function ErrorsPage() {
   // Scroll loading listener
   const observerTarget = useRef<HTMLDivElement>(null);
 
-  // 加载Message
+  // Load messages
   const loadMessages = useCallback(async (pageNum: number, append: boolean = false) => {
     if (!fileId) return;
     setLoading(true);
@@ -65,7 +65,7 @@ export default function ErrorsPage() {
     loadMessages(1, false);
   }, [fileId, errorType]);
 
-  // 滚动Load More
+  // Scroll to load more
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -94,7 +94,7 @@ export default function ErrorsPage() {
     const newExpandedIds = new Set(expandedIds);
 
     if (expandedIds.has(msgId)) {
-      // 折叠
+      // Collapse
       newExpandedIds.delete(msgId);
       setExpandedIds(newExpandedIds);
     } else {
@@ -134,14 +134,14 @@ export default function ErrorsPage() {
         return (
           <span className="badge badge-warning flex items-center gap-1">
             <AlertTriangle className="w-3 h-3" />
-            告警
+            Alarm
           </span>
         );
       case 'warning':
         return (
           <span className="badge flex items-center gap-1 bg-amber-500/20 text-amber-400 border border-amber-500/30">
             <Bell className="w-3 h-3" />
-            警告
+            Warning
           </span>
         );
       default:
@@ -206,10 +206,10 @@ export default function ErrorsPage() {
             onChange={(e) => setErrorType(e.target.value)}
             className="px-3 py-1.5 bg-dark-700 border border-dark-600 rounded-lg text-sm text-white focus:outline-none focus:border-primary-500"
           >
-            <option value="">所有Type</option>
+            <option value="">All Types</option>
             <option value="rpc-error">RPC Error</option>
-            <option value="fault">告警 (Fault)</option>
-            <option value="warning">警告</option>
+            <option value="fault">Alarm (Fault)</option>
+            <option value="warning">Warning</option>
           </select>
 
           {errorType && (
@@ -217,7 +217,7 @@ export default function ErrorsPage() {
               onClick={() => setErrorType('')}
               className="text-sm text-dark-400 hover:text-primary-400"
             >
-              清除Filter
+              Clear Filter
             </button>
           )}
         </div>
@@ -236,7 +236,7 @@ export default function ErrorsPage() {
               <thead>
                 <tr>
                   <th className="w-12"></th>
-                  <th>行号</th>
+                  <th>Line</th>
                   <th>Time</th>
                   <th>Type</th>
                   <th>Severity</th>

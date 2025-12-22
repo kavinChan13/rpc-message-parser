@@ -162,7 +162,7 @@ function TimelineEvent({
         />
       )}
 
-      {/* 图标 */}
+      {/* Icon */}
       <div
         className="relative z-10 w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-lg"
         style={{ backgroundColor: config.color + '30', border: `2px solid ${config.color}` }}
@@ -170,7 +170,7 @@ function TimelineEvent({
         <Icon className="w-4 h-4" style={{ color: config.color }} />
       </div>
 
-      {/* 内容 */}
+      {/* Content */}
       <div className="flex-1 pb-6">
         <div className="bg-dark-800/60 border border-dark-700 rounded-xl p-4 hover:border-dark-600 transition-colors">
           <div className="flex items-start justify-between gap-4 mb-3">
@@ -210,7 +210,7 @@ function TimelineEvent({
             <span className={`${event.direction === 'DU->RU' ? 'text-cyan-400' : 'text-orange-400'}`}>
               {event.direction}
             </span>
-            <span>行 {event.line_number}</span>
+            <span>Line {event.line_number}</span>
             <button
               onClick={handleToggle}
               className="ml-auto flex items-center gap-1 px-2 py-1 bg-dark-700 hover:bg-dark-600 rounded-lg transition-colors text-dark-300 hover:text-white"
@@ -223,13 +223,13 @@ function TimelineEvent({
               ) : (
                 <>
                   <ChevronDown className="w-3 h-3" />
-                  查看 XML
+                  View XML
                 </>
               )}
             </button>
           </div>
 
-          {/* Expand的 XML 内容 */}
+          {/* Expanded XML content */}
           {expanded && (
             <div className="mt-4 pt-4 border-t border-dark-700">
               {loading ? (
@@ -247,7 +247,7 @@ function TimelineEvent({
                     {detail?.xml_content ? (
                       <XmlHighlight xml={detail.xml_content} />
                     ) : (
-                      <div className="p-4 text-dark-500 text-sm">无 XML 内容</div>
+                      <div className="p-4 text-dark-500 text-sm">No XML content</div>
                     )}
                   </div>
                 </div>
@@ -334,7 +334,7 @@ function CarrierCard({
         })}
       </div>
 
-      {/* Time范围 */}
+      {/* Time range */}
       <div className="flex items-center justify-between mt-4 pt-4 border-t border-dark-700/50 text-xs text-dark-500">
         <div className="flex items-center gap-1">
           <Clock className="w-3 h-3" />
@@ -455,7 +455,7 @@ export default function CarriersPage() {
     }
   };
 
-  // 按 carrier Name分组
+  // Group by carrier name
   const carrierGroups = useMemo(() => {
     const groups: Record<string, CarrierEvent[]> = {};
     events.forEach(event => {
@@ -531,7 +531,7 @@ export default function CarriersPage() {
               onClick={loadData}
               className="shrink-0 px-3 py-2 bg-dark-700 hover:bg-dark-600 text-white rounded-lg transition-colors"
             >
-              重试
+              Retry
             </button>
           </div>
         </div>
@@ -566,7 +566,7 @@ export default function CarriersPage() {
             onClick={() => { setSelectedCarrier(null); setExpandedEventIds(new Set()); }}
             className="px-4 py-2 bg-dark-700 hover:bg-dark-600 text-white rounded-lg transition-colors"
           >
-            Back概览
+            Back to Overview
           </button>
         )}
       </div>
@@ -623,9 +623,9 @@ export default function CarriersPage() {
           <>
             {/* Statistics charts */}
             <div className="grid lg:grid-cols-3 gap-6 mb-8">
-              {/* 饼图 - Carrier Type分布 */}
+              {/* Pie chart - Carrier type distribution */}
               <div className="bg-dark-800/50 border border-dark-700 rounded-2xl p-6">
-                <h3 className="text-lg font-semibold text-white mb-4">Carrier Type分布</h3>
+                <h3 className="text-lg font-semibold text-white mb-4">Carrier Type Distribution</h3>
                 <div className="flex justify-center">
                   <PieChart data={pieData} />
                 </div>
@@ -641,7 +641,7 @@ export default function CarriersPage() {
 
               {/* Bar chart - Event type distribution */}
               <div className="bg-dark-800/50 border border-dark-700 rounded-2xl p-6">
-                <h3 className="text-lg font-semibold text-white mb-4">Event Type分布</h3>
+                <h3 className="text-lg font-semibold text-white mb-4">Event Type Distribution</h3>
                 <BarChart data={eventTypeData} />
               </div>
 

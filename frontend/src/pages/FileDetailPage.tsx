@@ -81,7 +81,7 @@ export default function FileDetailPage() {
                 <span>•</span>
                 <span>{format(new Date(file.upload_time), 'yyyy-MM-dd HH:mm:ss')}</span>
                 <span>•</span>
-                <span>{stats.total_lines.toLocaleString()} 行</span>
+                <span>{stats.total_lines.toLocaleString()} lines</span>
               </div>
             </div>
           </div>
@@ -94,7 +94,7 @@ export default function FileDetailPage() {
           <div className="text-3xl font-bold text-primary-400">
             {stats.total_messages.toLocaleString()}
           </div>
-          <div className="text-dark-400 text-sm mt-1">总Message数</div>
+          <div className="text-dark-400 text-sm mt-1">Total Messages</div>
         </div>
         <div className="bg-dark-800/50 border border-dark-700 rounded-xl p-5">
           <div className="text-3xl font-bold text-blue-400">
