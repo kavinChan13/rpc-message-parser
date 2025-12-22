@@ -240,9 +240,9 @@ export default function ErrorsPage() {
                   <th>Time</th>
                   <th>Type</th>
                   <th>Severity</th>
-                  <th>Error标签</th>
-                  <th>ErrorMessage</th>
-                  <th>故障ID</th>
+                  <th>Error Tag</th>
+                  <th>Error Message</th>
+                  <th>Fault ID</th>
                   <th>Status</th>
                 </tr>
               </thead>
@@ -285,7 +285,7 @@ export default function ErrorsPage() {
                       </td>
                     </tr>
 
-                    {/* Expand的Details行 */}
+                    {/* Expanded details row */}
                     {expandedIds.has(msg.id) && (
                       <tr key={`${msg.id}-detail`} className="bg-dark-900/50">
                         <td colSpan={9} className="!p-0">
@@ -300,7 +300,7 @@ export default function ErrorsPage() {
                                 {/* Error metadata */}
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                                   <div>
-                                    <div className="text-xs text-dark-500 mb-1">行号</div>
+                                    <div className="text-xs text-dark-500 mb-1">Line</div>
                                     <div className="text-white font-mono">{msg.line_number}</div>
                                   </div>
                                   <div>
@@ -321,13 +321,13 @@ export default function ErrorsPage() {
                                   )}
                                   {msg.error_tag && (
                                     <div>
-                                      <div className="text-xs text-dark-500 mb-1">Error标签</div>
+                                      <div className="text-xs text-dark-500 mb-1">Error Tag</div>
                                       <div className="text-white">{msg.error_tag}</div>
                                     </div>
                                   )}
                                   {msg.fault_id && (
                                     <div>
-                                      <div className="text-xs text-dark-500 mb-1">故障ID</div>
+                                      <div className="text-xs text-dark-500 mb-1">Fault ID</div>
                                       <div className="text-primary-400 font-mono">{msg.fault_id}</div>
                                     </div>
                                   )}
@@ -361,17 +361,17 @@ export default function ErrorsPage() {
                                   </div>
                                 )}
 
-                                {/* XML 内容 */}
+                                {/* XML content */}
                                 <div>
                                   <div className="flex items-center gap-2 mb-2">
-                                    <span className="text-xs text-dark-500 uppercase tracking-wider">XML 内容</span>
+                                    <span className="text-xs text-dark-500 uppercase tracking-wider">XML Content</span>
                                     <div className="flex-1 h-px bg-dark-700"></div>
                                   </div>
                                   <div className="bg-dark-950 border border-dark-700 rounded-xl overflow-hidden">
                                     {messageDetails.has(msg.id) && messageDetails.get(msg.id)?.xml_content ? (
                                       <XmlHighlight xml={messageDetails.get(msg.id)!.xml_content || ''} />
                                     ) : (
-                                      <div className="p-4 text-dark-500 text-sm">无 XML 内容</div>
+                                      <div className="p-4 text-dark-500 text-sm">No XML content</div>
                                     )}
                                   </div>
                                 </div>

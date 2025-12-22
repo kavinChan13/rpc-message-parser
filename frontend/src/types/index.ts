@@ -1,4 +1,4 @@
-// User types - 简化版
+// User types - simplified version
 export interface User {
   id: number;
   username: string;

@@ -654,16 +654,16 @@ export default function CarriersPage() {
                     <span className="text-2xl font-bold text-white">{statistics.total_events}</span>
                   </div>
                   <div className="flex items-center justify-between p-3 bg-dark-700/30 rounded-xl">
-                    <span className="text-dark-400">Carrier 数量</span>
+                    <span className="text-dark-400">Carrier Count</span>
                     <span className="text-2xl font-bold text-primary-400">{statistics.carrier_names.length}</span>
                   </div>
                   <div className="flex items-center justify-between p-3 bg-dark-700/30 rounded-xl">
-                    <span className="text-dark-400">Type数量</span>
+                    <span className="text-dark-400">Type Count</span>
                     <span className="text-2xl font-bold text-purple-400">{Object.keys(statistics.by_carrier_type).length}</span>
                   </div>
                   {Object.entries(statistics.by_state || {}).length > 0 && (
                     <div className="p-3 bg-dark-700/30 rounded-xl">
-                      <div className="text-dark-400 mb-2">Status分布</div>
+                      <div className="text-dark-400 mb-2">Status Distribution</div>
                       <div className="flex flex-wrap gap-2">
                         {Object.entries(statistics.by_state).slice(0, 4).map(([state, count]) => (
                           <span key={state} className="text-xs px-2 py-1 bg-dark-600 rounded text-dark-300">
@@ -681,7 +681,7 @@ export default function CarriersPage() {
             <div className="bg-dark-800/30 border border-dark-700 rounded-2xl p-6">
               <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
                 <Radio className="w-5 h-5 text-primary-400" />
-                所有 Carriers ({carrierGroups.length})
+                All Carriers ({carrierGroups.length})
               </h3>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {carrierGroups.map(([name, groupEvents]) => (
@@ -697,7 +697,7 @@ export default function CarriersPage() {
           </>
         )
       ) : (
-        // 空Status
+        // Empty state
         <div className="bg-dark-800/30 border border-dark-700 rounded-2xl p-12">
           <div className="flex flex-col items-center justify-center text-center">
             <div className="w-20 h-20 bg-dark-700/50 rounded-full flex items-center justify-center mb-6">

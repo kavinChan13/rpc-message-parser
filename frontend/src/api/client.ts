@@ -31,7 +31,7 @@ apiClient.interceptors.response.use(
   }
 );
 
-// Auth API - 简化版，只需用户名
+// Auth API - simplified version, username only
 export const authAPI = {
   login: async (username: string) => {
     const response = await apiClient.post('/auth/login', { username });
