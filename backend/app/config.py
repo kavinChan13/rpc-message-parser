@@ -43,10 +43,11 @@ class Settings(BaseSettings):
         "*.nokia.com",
     ]
 
-    # Rate Limiting 配置
-    RATE_LIMIT_ENABLED: bool = True
-    RATE_LIMIT_DEFAULT: str = "100/minute"  # 默认限制
-    RATE_LIMIT_LOGIN: str = "10/minute"  # 登录接口限制
+    # Rate Limiting - disabled by default for development
+    # Enable in production by setting RATE_LIMIT_ENABLED=true in .env
+    RATE_LIMIT_ENABLED: bool = False
+    RATE_LIMIT_DEFAULT: str = "200/minute"  # default limit
+    RATE_LIMIT_LOGIN: str = "20/minute"  # login endpoint limit
 
     # Base Path 配置（用于反向代理）
     BASE_PATH: str = ""  # 例如 "/rpc-parser"
