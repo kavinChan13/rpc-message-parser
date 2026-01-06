@@ -1,16 +1,7 @@
 import axios from 'axios';
 import { useAuthStore } from '../store/authStore';
 
-// 获取 Base Path，支持反向代理部署
-// 处理路径拼接，确保不会出现双斜杠
-const getApiBaseUrl = (): string => {
-  const basePath = import.meta.env.BASE_URL || '/';
-  // 确保 basePath 以 / 结尾，然后拼接 api
-  const normalizedBase = basePath.endsWith('/') ? basePath : `${basePath}/`;
-  return `${normalizedBase}api`;
-};
-
-const API_BASE_URL = getApiBaseUrl();
+const API_BASE_URL = '/api';
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -34,10 +25,7 @@ apiClient.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       useAuthStore.getState().logout();
-      // 使用 base path 进行重定向
-      const basePath = import.meta.env.BASE_URL || '/';
-      const loginPath = basePath.endsWith('/') ? `${basePath}login` : `${basePath}/login`;
-      window.location.href = loginPath;
+      window.location.href = '/login';
     }
     return Promise.reject(error);
   }
