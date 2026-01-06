@@ -17,9 +17,10 @@ from slowapi.middleware import SlowAPIMiddleware
 from .config import settings
 from .database import init_db
 from .routes import auth_router, files_router, messages_router, carriers_router
+from .middleware.reverse_proxy import PrefixStripMiddleware
 
 
-# Rate Limiter 配置
+# Rate Limiter configuration
 limiter = Limiter(
     key_func=get_remote_address,
     default_limits=[settings.RATE_LIMIT_DEFAULT] if settings.RATE_LIMIT_ENABLED else [],
@@ -37,26 +38,26 @@ async def lifespan(app: FastAPI):
     pass
 
 
-# 创建 FastAPI 应用
+# Create FastAPI application
 app = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION,
     description="O-RAN RPC Message Log Parsing and Analysis System API",
     lifespan=lifespan,
-    # 如果有 base path，添加到 OpenAPI 文档
+    # Add base path for OpenAPI documentation when behind reverse proxy
     root_path=settings.BASE_PATH,
 )
 
-# 添加 Rate Limiter 到应用状态
+# Add Rate Limiter to application state
 app.state.limiter = limiter
 
 
-# ==================== 安全 Middleware ====================
+# ==================== Security Middleware ====================
 
-# Rate Limit 超限处理
+# Rate Limit exceeded handler
 @app.exception_handler(RateLimitExceeded)
 async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
-    """处理请求限流"""
+    """Handle rate limit exceeded"""
     return Response(
         content='{"detail": "Too many requests. Please slow down."}',
         status_code=429,
@@ -65,28 +66,28 @@ async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
     )
 
 
-# 安全响应头 Middleware
+# Security headers Middleware
 @app.middleware("http")
 async def add_security_headers(request: Request, call_next):
-    """添加安全响应头"""
+    """Add security response headers"""
     response = await call_next(request)
 
-    # 防止 MIME 类型嗅探
+    # Prevent MIME type sniffing
     response.headers["X-Content-Type-Options"] = "nosniff"
 
-    # 防止点击劫持
+    # Prevent clickjacking
     response.headers["X-Frame-Options"] = "DENY"
 
-    # XSS 保护
+    # XSS protection
     response.headers["X-XSS-Protection"] = "1; mode=block"
 
-    # 引用策略
+    # Referrer policy
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
 
-    # 权限策略（限制某些浏览器功能）
+    # Permissions policy (restrict certain browser features)
     response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
 
-    # 仅在生产环境启用 HSTS（HTTPS 强制）
+    # Enable HSTS only in production (force HTTPS)
     if not settings.DEBUG:
         response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
 
@@ -98,7 +99,7 @@ if settings.RATE_LIMIT_ENABLED:
     app.add_middleware(SlowAPIMiddleware)
 
 
-# CORS Middleware - 配置跨域访问
+# CORS Middleware - configure cross-origin access
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.ALLOWED_ORIGINS,
@@ -109,8 +110,8 @@ app.add_middleware(
 )
 
 
-# Trusted Host Middleware - 防止 Host 头攻击
-# 注意：在开发环境可能需要禁用
+# Trusted Host Middleware - prevent Host header attacks
+# Note: may need to disable in development environment
 if not settings.DEBUG:
     app.add_middleware(
         TrustedHostMiddleware,
@@ -118,7 +119,13 @@ if not settings.DEBUG:
     )
 
 
-# ==================== API 路由 ====================
+# Prefix Strip Middleware - for reverse proxy deployment
+# Strips URL prefix from requests when deployed behind a reverse proxy
+# Supports X-Forwarded-Prefix header or PREFIX environment variable
+app.add_middleware(PrefixStripMiddleware, prefix=settings.BASE_PATH or None)
+
+
+# ==================== API Routes ====================
 
 # Include routers (must be before catch-all routes)
 app.include_router(auth_router, prefix="/api")
@@ -137,7 +144,7 @@ async def health_check():
     }
 
 
-# ==================== 静态文件服务 ====================
+# ==================== Static File Serving ====================
 
 # Serve frontend static files (must be after API routes)
 frontend_dist = Path(__file__).parent.parent.parent / "frontend" / "dist"

@@ -8,12 +8,14 @@ set -euo pipefail
 #   --debug    Enable debug mode for frontend (VITE_DEBUG=1)
 #   --daemon   Run backend server in daemon mode
 #   --port=    Override port (default: 8000)
+#   --prefix=  URL prefix for reverse proxy (default: /)
 #   --clean    Clean build and reinstall dependencies
 # ------------------------------------------------------------
 
 DEBUG=0
 DAEMON_MODE=0
 PORT=8000
+PREFIX_VALUE=""
 CLEAN_MODE=0
 
 # Color helpers
@@ -59,6 +61,9 @@ for arg in "$@"; do
         --port=*)
             PORT="${arg#*=}"
             ;;
+        --prefix=*)
+            PREFIX_VALUE="${arg#*=}"
+            ;;
         --clean)
             CLEAN_MODE=1
             ;;
@@ -68,11 +73,12 @@ for arg in "$@"; do
             echo "Usage: ./start.sh [OPTIONS]"
             echo ""
             echo "Options:"
-            echo "  --debug     Enable debug mode for frontend"
-            echo "  --daemon    Run backend server in daemon mode"
-            echo "  --port=N    Override port (default: 8000)"
-            echo "  --clean     Clean build and reinstall dependencies"
-            echo "  --help      Show this help message"
+            echo "  --debug      Enable debug mode for frontend"
+            echo "  --daemon     Run backend server in daemon mode"
+            echo "  --port=N     Override port (default: 8000)"
+            echo "  --prefix=P   URL prefix for reverse proxy (e.g., /rpc-parser)"
+            echo "  --clean      Clean build and reinstall dependencies"
+            echo "  --help       Show this help message"
             exit 0
             ;;
     esac
@@ -90,6 +96,13 @@ if [ "$DEBUG" = "1" ]; then
     echo_success "Debug mode enabled (VITE_DEBUG=1)"
 else
     export VITE_DEBUG=
+fi
+
+# Set prefix for reverse proxy
+if [ -n "$PREFIX_VALUE" ]; then
+    export PREFIX="$PREFIX_VALUE"
+    export VITE_BASE_PATH="$PREFIX_VALUE"
+    echo_success "Using PREFIX=$PREFIX_VALUE (for reverse proxy deployment)"
 fi
 
 echo_info "Backend port: $PORT"

@@ -6,6 +6,7 @@
 #   .\start.ps1 -Debug          # Debug mode
 #   .\start.ps1 -Daemon         # Daemon mode
 #   .\start.ps1 -Port 8080      # Custom port
+#   .\start.ps1 -Prefix /app    # Reverse proxy prefix
 #   .\start.ps1 -Clean          # Clean build
 # ============================================================
 
@@ -13,6 +14,7 @@ param(
     [switch]$Debug,
     [switch]$Daemon,
     [int]$Port = 8000,
+    [string]$Prefix = "",
     [switch]$Clean,
     [switch]$Help
 )
@@ -49,6 +51,7 @@ if ($Help) {
     Write-Host "  -Debug      Enable debug mode for frontend"
     Write-Host "  -Daemon     Run backend server in background"
     Write-Host "  -Port N     Override port (default: 8000)"
+    Write-Host "  -Prefix P   URL prefix for reverse proxy (e.g., /rpc-parser)"
     Write-Host "  -Clean      Clean build and reinstall dependencies"
     Write-Host "  -Help       Show this help message"
     Write-Host ""
@@ -67,6 +70,13 @@ if ($Debug) {
     Write-Success "Debug mode enabled (VITE_DEBUG=1)"
 } else {
     $env:VITE_DEBUG = ""
+}
+
+# Set prefix for reverse proxy
+if ($Prefix -ne "") {
+    $env:PREFIX = $Prefix
+    $env:VITE_BASE_PATH = $Prefix
+    Write-Success "Using PREFIX=$Prefix (for reverse proxy deployment)"
 }
 
 Write-Info "Backend port: $Port"

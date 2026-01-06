@@ -370,18 +370,27 @@ cd frontend && npm run dev         # Terminal 2
 ./start.sh --clean
 ```
 
-### 反向代理部署 (Reverse Proxy)
+### Reverse Proxy Deployment
 
-如果需要部署在子路径下（如 `https://server.com/rpc-parser/`）：
+To deploy under a sub-path (e.g., `https://server.com/rpc-parser/`):
 
-#### 1. 设置环境变量
+#### Option 1: Using Start Script (Recommended)
+```bash
+# Linux/macOS
+./start.sh --prefix=/rpc-parser --daemon
 
-**前端** - 创建 `frontend/.env.local`:
+# Windows PowerShell
+.\start.ps1 -Prefix /rpc-parser -Daemon
+```
+
+#### Option 2: Manual Configuration
+
+**Frontend** - Create `frontend/.env.local`:
 ```bash
 VITE_BASE_PATH=/rpc-parser/
 ```
 
-**后端** - 创建 `backend/.env`:
+**Backend** - Create `backend/.env`:
 ```bash
 BASE_PATH=/rpc-parser
 ALLOWED_ORIGINS=["https://your-server.nokia.com"]
@@ -389,32 +398,37 @@ ALLOWED_HOSTS=["your-server.nokia.com"]
 DEBUG=false
 ```
 
-#### 2. 重新构建前端
+Then rebuild frontend:
 ```bash
 cd frontend
 npm run build
 ```
 
-#### 3. 配置 Nginx
-参考 `deploy/nginx.conf.example` 配置反向代理。
+#### Nginx Configuration
+See `deploy/nginx.conf.example` for reverse proxy configuration.
 
-### CI/CD 自动部署
+**How it works:**
+- `PrefixStripMiddleware` strips the URL prefix from incoming requests
+- Supports `X-Forwarded-Prefix` header from reverse proxy
+- Frontend uses `import.meta.env.BASE_URL` for dynamic base path
 
-项目已配置 GitLab CI/CD (`.gitlab-ci.yml`)，支持：
+### CI/CD Auto Deployment
 
-- ✅ 自动测试（前端构建检查、后端导入检查）
-- ✅ 自动构建前端（支持自定义 Base Path）
-- ✅ 手动部署到开发/生产环境
+GitLab CI/CD is configured (`.gitlab-ci.yml`) with:
 
-**配置 CI/CD 变量**（GitLab Settings → CI/CD → Variables）：
-| 变量名 | 说明 |
-|--------|------|
-| `DEPLOY_HOST` | 部署服务器地址 |
-| `DEPLOY_USER` | 部署用户名 |
-| `DEPLOY_PATH` | 部署路径 |
-| `BASE_PATH` | 应用基础路径（如 `/rpc-parser/`）|
-| `SSH_PRIVATE_KEY` | SSH 私钥 |
-| `SSH_KNOWN_HOSTS` | SSH known_hosts 内容 |
+- ✅ Auto testing (frontend build check, backend import check)
+- ✅ Auto build frontend (supports custom Base Path)
+- ✅ Manual deployment to dev/prod environments
+
+**Configure CI/CD Variables** (GitLab Settings → CI/CD → Variables):
+| Variable | Description |
+|----------|-------------|
+| `DEPLOY_HOST` | Deployment server address |
+| `DEPLOY_USER` | Deployment username |
+| `DEPLOY_PATH` | Deployment path |
+| `BASE_PATH` | Application base path (e.g., `/rpc-parser/`) |
+| `SSH_PRIVATE_KEY` | SSH private key |
+| `SSH_KNOWN_HOSTS` | SSH known_hosts content |
 
 ---
 
