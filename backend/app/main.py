@@ -45,7 +45,7 @@ app = FastAPI(
     description="O-RAN RPC Message Log Parsing and Analysis System API",
     lifespan=lifespan,
     # Add base path for OpenAPI documentation when behind reverse proxy
-    root_path=settings.BASE_PATH,
+    root_path=settings.BASE_PATH if settings.BASE_PATH else "",
 )
 
 # Add Rate Limiter to application state
@@ -120,9 +120,10 @@ if not settings.DEBUG:
 
 
 # Prefix Strip Middleware - for reverse proxy deployment
+# Only enable when BASE_PATH is explicitly set (not empty)
 # Strips URL prefix from requests when deployed behind a reverse proxy
-# Supports X-Forwarded-Prefix header or PREFIX environment variable
-app.add_middleware(PrefixStripMiddleware, prefix=settings.BASE_PATH or None)
+if settings.BASE_PATH:
+    app.add_middleware(PrefixStripMiddleware, prefix=settings.BASE_PATH)
 
 
 # ==================== API Routes ====================
