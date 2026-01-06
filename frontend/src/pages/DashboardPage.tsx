@@ -35,7 +35,7 @@ export default function DashboardPage() {
   // Polling for parsing status - separate effect to avoid infinite loop
   useEffect(() => {
     const hasPending = files.some(f => f.parse_status === 'pending' || f.parse_status === 'parsing');
-    
+
     // Only start polling if there are files being parsed
     if (!hasPending) {
       return;
