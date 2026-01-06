@@ -57,7 +57,7 @@ build-frontend:
     - tags
 
 # ==================== DEPLOY Stage ====================
-# 
+#
 # To enable deployment, configure these variables in GitLab CI/CD Settings:
 #   - DEPLOY_HOST: Server address (e.g., 10.20.30.40)
 #   - DEPLOY_USER: SSH username (e.g., deploy)
