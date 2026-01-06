@@ -160,7 +160,9 @@ echo_info "Setting up frontend..."
 
 cd frontend
 
-if [ ! -d "node_modules" ] || [ "$CLEAN_MODE" = "1" ]; then
+# Check if node_modules needs to be installed or updated
+# Install if: no node_modules, clean mode, or package.json is newer than node_modules
+if [ ! -d "node_modules" ] || [ "$CLEAN_MODE" = "1" ] || [ "package.json" -nt "node_modules" ]; then
     echo_info "Installing frontend dependencies..."
     npm install
     echo_success "Frontend dependencies installed"
