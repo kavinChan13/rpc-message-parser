@@ -49,16 +49,21 @@ REM Setup frontend
 echo [INFO] Setting up frontend...
 cd frontend
 
-if not exist "node_modules" (
-    echo [INFO] Installing frontend dependencies...
-    call npm install
-    echo [OK] Frontend dependencies installed
-) else (
-    echo [OK] Frontend dependencies already installed
+REM Always run npm install to ensure all dependencies are up to date
+echo [INFO] Installing frontend dependencies...
+call npm install
+if %ERRORLEVEL% NEQ 0 (
+    echo [ERROR] Failed to install frontend dependencies
+    exit /b 1
 )
+echo [OK] Frontend dependencies installed
 
 echo [INFO] Building frontend...
 call npm run build
+if %ERRORLEVEL% NEQ 0 (
+    echo [ERROR] Frontend build failed
+    exit /b 1
+)
 echo [OK] Frontend build completed
 
 cd ..

@@ -1,10 +1,11 @@
 import axios from 'axios';
 import { useAuthStore } from '../store/authStore';
 
-// API Base URL - 简单直接的配置
-// 本地开发和生产环境都使用 /api
-// 只有当明确设置了 VITE_BASE_PATH 时才使用 prefix
-const API_BASE_URL = '/api';
+// API Base URL - 支持反向代理部署
+// import.meta.env.BASE_URL 会自动从 vite.config.ts 的 base 选项获取
+// 例如: BASE_URL = '/rpc-parser/' 时，API_BASE_URL = '/rpc-parser/api'
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+const API_BASE_URL = `${basePath}/api`;
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -28,7 +29,8 @@ apiClient.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       useAuthStore.getState().logout();
-      window.location.href = '/login';
+      // 使用 basePath 支持反向代理部署
+      window.location.href = `${basePath}/login`;
     }
     return Promise.reject(error);
   }

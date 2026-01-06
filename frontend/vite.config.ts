@@ -1,5 +1,6 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
+import compression from 'vite-plugin-compression'
 
 export default defineConfig(({ mode }) => {
   // 加载环境变量
@@ -10,7 +11,21 @@ export default defineConfig(({ mode }) => {
   const basePath = env.VITE_BASE_PATH || '/'
 
   return {
-    plugins: [react()],
+    plugins: [
+      react(),
+      // Gzip 压缩 - 生产环境预压缩静态资源
+      compression({
+        algorithm: 'gzip',
+        ext: '.gz',
+        threshold: 1024, // 只压缩大于 1KB 的文件
+      }),
+      // Brotli 压缩 - 更高压缩率
+      compression({
+        algorithm: 'brotliCompress',
+        ext: '.br',
+        threshold: 1024,
+      }),
+    ],
 
     // Base Path 配置 - 用于反向代理部署
     base: basePath,

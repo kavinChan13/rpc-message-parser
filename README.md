@@ -155,6 +155,8 @@ rpc-message-parser/
 │   │   ├── auth.py            # Authentication
 │   │   ├── schemas.py         # API schemas
 │   │   ├── parser_service.py  # Parsing service
+│   │   ├── middleware/        # Security middleware
+│   │   │   └── reverse_proxy.py  # Prefix stripping for reverse proxy
 │   │   └── routes/            # API routes
 │   ├── requirements.txt
 │   └── run.py
@@ -162,12 +164,17 @@ rpc-message-parser/
 ├── frontend/                   # Frontend (React)
 │   ├── src/
 │   │   ├── App.tsx
-│   │   ├── api/               # API client
+│   │   ├── main.tsx           # Entry with dynamic basename
+│   │   ├── api/               # API client (auto prefix support)
 │   │   ├── store/             # State management
 │   │   ├── pages/             # Page components
 │   │   └── components/        # Common components
 │   ├── package.json
-│   └── vite.config.ts
+│   └── vite.config.ts         # Build config with compression
+│
+├── deploy/                     # Deployment files
+│   ├── nginx.conf.example     # Nginx reverse proxy config
+│   └── restart.sh             # Service restart script
 │
 ├── docs/
 │   └── DEVELOPMENT.md         # Complete development documentation
@@ -290,6 +297,8 @@ Includes:
 - ✅ **Log Optimization** - Detailed logging disabled in production to reduce system overhead
 - ✅ **Frontend Polling Optimization** - Poll only when necessary, reducing API request frequency
 - ✅ **Index Optimization** - Database field index optimization for improved query speed
+- ✅ **Asset Compression** - Gzip and Brotli pre-compression for static assets
+- ✅ **Code Splitting** - Vendor chunks separation for better caching
 
 ---
 
@@ -302,6 +311,7 @@ Includes:
 - ✅ **XSS Protection** - React auto-escaping to prevent cross-site scripting attacks
 - ✅ **Rate Limiting** - API 请求限流，防止 DDoS 攻击
 - ✅ **Security Headers** - 安全响应头（X-Frame-Options, X-XSS-Protection 等）
+- ✅ **Content Security Policy** - CSP 防止 XSS 和数据注入攻击（生产环境）
 - ✅ **CORS Protection** - 严格的跨域访问控制
 - ✅ **Trusted Host** - Host 头验证，防止 Host 头攻击
 
@@ -411,6 +421,8 @@ See `deploy/nginx.conf.example` for reverse proxy configuration.
 - `PrefixStripMiddleware` strips the URL prefix from incoming requests
 - Supports `X-Forwarded-Prefix` header from reverse proxy
 - Frontend uses `import.meta.env.BASE_URL` for dynamic base path
+- `BrowserRouter` automatically uses the correct `basename`
+- API client automatically prepends the base path to all requests
 
 ### CI/CD Auto Deployment
 
@@ -419,6 +431,7 @@ GitLab CI/CD is configured (`.gitlab-ci.yml`) with:
 - ✅ Auto testing (frontend build check, backend import check)
 - ✅ Auto build frontend (supports custom Base Path)
 - ✅ Manual deployment to dev/prod environments
+- ✅ Auto service restart via `deploy/restart.sh`
 
 **Configure CI/CD Variables** (GitLab Settings → CI/CD → Variables):
 | Variable | Description |
@@ -429,6 +442,10 @@ GitLab CI/CD is configured (`.gitlab-ci.yml`) with:
 | `BASE_PATH` | Application base path (e.g., `/rpc-parser/`) |
 | `SSH_PRIVATE_KEY` | SSH private key |
 | `SSH_KNOWN_HOSTS` | SSH known_hosts content |
+
+**Deployment Scripts:**
+- `deploy/restart.sh` - Auto restart backend service after deployment
+- `deploy/nginx.conf.example` - Nginx reverse proxy configuration template
 
 ---
 

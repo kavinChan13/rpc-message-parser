@@ -87,8 +87,21 @@ async def add_security_headers(request: Request, call_next):
     # Permissions policy (restrict certain browser features)
     response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
 
-    # Enable HSTS only in production (force HTTPS)
+    # Content Security Policy - 防止 XSS 和数据注入攻击
+    # 生产环境启用更严格的 CSP
     if not settings.DEBUG:
+        response.headers["Content-Security-Policy"] = (
+            "default-src 'self'; "
+            "script-src 'self'; "
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+            "font-src 'self' https://fonts.gstatic.com; "
+            "img-src 'self' data: blob:; "
+            "connect-src 'self'; "
+            "frame-ancestors 'none'; "
+            "base-uri 'self'; "
+            "form-action 'self';"
+        )
+        # Enable HSTS (force HTTPS)
         response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
 
     return response
