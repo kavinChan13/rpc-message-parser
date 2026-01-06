@@ -300,6 +300,10 @@ Includes:
 - ✅ **File Validation** - Upload file type and size validation
 - ✅ **SQL Injection Protection** - Using ORM to prevent SQL injection
 - ✅ **XSS Protection** - React auto-escaping to prevent cross-site scripting attacks
+- ✅ **Rate Limiting** - API 请求限流，防止 DDoS 攻击
+- ✅ **Security Headers** - 安全响应头（X-Frame-Options, X-XSS-Protection 等）
+- ✅ **CORS Protection** - 严格的跨域访问控制
+- ✅ **Trusted Host** - Host 头验证，防止 Host 头攻击
 
 ---
 
@@ -365,6 +369,52 @@ cd frontend && npm run dev         # Terminal 2
 # Clean rebuild
 ./start.sh --clean
 ```
+
+### 反向代理部署 (Reverse Proxy)
+
+如果需要部署在子路径下（如 `https://server.com/rpc-parser/`）：
+
+#### 1. 设置环境变量
+
+**前端** - 创建 `frontend/.env.local`:
+```bash
+VITE_BASE_PATH=/rpc-parser/
+```
+
+**后端** - 创建 `backend/.env`:
+```bash
+BASE_PATH=/rpc-parser
+ALLOWED_ORIGINS=["https://your-server.nokia.com"]
+ALLOWED_HOSTS=["your-server.nokia.com"]
+DEBUG=false
+```
+
+#### 2. 重新构建前端
+```bash
+cd frontend
+npm run build
+```
+
+#### 3. 配置 Nginx
+参考 `deploy/nginx.conf.example` 配置反向代理。
+
+### CI/CD 自动部署
+
+项目已配置 GitLab CI/CD (`.gitlab-ci.yml`)，支持：
+
+- ✅ 自动测试（前端构建检查、后端导入检查）
+- ✅ 自动构建前端（支持自定义 Base Path）
+- ✅ 手动部署到开发/生产环境
+
+**配置 CI/CD 变量**（GitLab Settings → CI/CD → Variables）：
+| 变量名 | 说明 |
+|--------|------|
+| `DEPLOY_HOST` | 部署服务器地址 |
+| `DEPLOY_USER` | 部署用户名 |
+| `DEPLOY_PATH` | 部署路径 |
+| `BASE_PATH` | 应用基础路径（如 `/rpc-parser/`）|
+| `SSH_PRIVATE_KEY` | SSH 私钥 |
+| `SSH_KNOWN_HOSTS` | SSH known_hosts 内容 |
 
 ---
 

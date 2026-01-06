@@ -1,5 +1,5 @@
 # O-RAN RPC Log Parser - Backend Dependencies
-# Compatible with Python 3.13
+# Compatible with Python 3.11+
 
 # Web Framework
 fastapi>=0.115.0
@@ -21,3 +21,6 @@ xmltodict>=0.14.0
 # Validation
 pydantic>=2.10.0
 pydantic-settings>=2.6.0
+
+# Security & Rate Limiting
+slowapi>=0.1.9
