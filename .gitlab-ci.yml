@@ -1,5 +1,5 @@
 # GitLab CI/CD Configuration for RPC Message Parser
-# 自动构建和部署流水线
+# Automated build and deployment pipeline
 
 stages:
   - test
@@ -9,56 +9,42 @@ stages:
 variables:
   NODE_VERSION: "18"
   PYTHON_VERSION: "3.11"
-  # 部署相关变量（在 GitLab CI/CD Settings 中配置）
-  # DEPLOY_HOST: 部署服务器地址
-  # DEPLOY_USER: 部署用户
-  # DEPLOY_PATH: 部署路径
-  # BASE_PATH: 应用基础路径（如 /rpc-parser/）
 
-# 缓存配置
+# Cache dependencies for faster builds
 cache:
   paths:
     - frontend/node_modules/
     - .pip-cache/
 
-# ==================== 测试阶段 ====================
+# ==================== TEST Stage ====================
 
 test-backend:
   stage: test
   image: python:${PYTHON_VERSION}
-  before_script:
-    - pip install --cache-dir .pip-cache -r backend/requirements.txt
   script:
-    - cd backend
-    - python -c "import app.main; print('Backend imports OK')"
+    - pip install --cache-dir .pip-cache -r backend/requirements.txt
+    - cd backend && python -c "import app.main; print('Backend imports OK')"
   only:
     - merge_requests
     - main
-    - develop
 
 test-frontend:
   stage: test
   image: node:${NODE_VERSION}
-  before_script:
-    - cd frontend
-    - npm ci
   script:
-    - npm run build
+    - cd frontend && npm ci && npm run build
   only:
     - merge_requests
     - main
-    - develop
 
-# ==================== 构建阶段 ====================
+# ==================== BUILD Stage ====================
 
 build-frontend:
   stage: build
   image: node:${NODE_VERSION}
-  before_script:
+  script:
     - cd frontend
     - npm ci
-  script:
-    # 设置 Base Path 环境变量（默认为 /）
     - export VITE_BASE_PATH=${BASE_PATH:-/}
     - npm run build
     - echo "Build completed with BASE_PATH=$VITE_BASE_PATH"
@@ -70,55 +56,36 @@ build-frontend:
     - main
     - tags
 
-# ==================== 部署阶段 ====================
+# ==================== DEPLOY Stage ====================
+# 
+# To enable deployment, configure these variables in GitLab CI/CD Settings:
+#   - DEPLOY_HOST: Server address (e.g., 10.20.30.40)
+#   - DEPLOY_USER: SSH username (e.g., deploy)
+#   - DEPLOY_PATH: Deployment path (e.g., /var/www/rpc-parser)
+#   - BASE_PATH: URL prefix for reverse proxy (e.g., /rpc-parser/)
+#   - SSH_PRIVATE_KEY: SSH private key for authentication
+#   - SSH_KNOWN_HOSTS: Server SSH fingerprint (run: ssh-keyscan server)
+#
+# If you don't need SSH deployment, you can manually download
+# the build artifacts from GitLab and deploy them yourself.
 
-# 部署到开发环境
-deploy-dev:
+deploy:
   stage: deploy
   image: alpine:latest
   before_script:
     - apk add --no-cache rsync openssh-client
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
+    - mkdir -p ~/.ssh && chmod 700 ~/.ssh
     - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
-    - chmod 644 ~/.ssh/known_hosts
   script:
-    - echo "Deploying to development server..."
-    # 同步前端构建产物
+    - echo "Deploying to ${DEPLOY_HOST}..."
+    # Sync frontend build
     - rsync -avz --delete frontend/dist/ ${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}/frontend/dist/
-    # 同步后端代码
+    # Sync backend code (exclude cache and data files)
     - rsync -avz --exclude='__pycache__' --exclude='*.pyc' --exclude='*.db' --exclude='uploads/' backend/ ${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}/backend/
-    # 重启服务
-    - ssh ${DEPLOY_USER}@${DEPLOY_HOST} "cd ${DEPLOY_PATH} && ./restart.sh || true"
-  environment:
-    name: development
-    url: https://${DEPLOY_HOST}${BASE_PATH:-/}
-  only:
-    - develop
-  when: manual
-
-# 部署到生产环境
-deploy-prod:
-  stage: deploy
-  image: alpine:latest
-  before_script:
-    - apk add --no-cache rsync openssh-client
-    - eval $(ssh-agent -s)
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
-    - chmod 644 ~/.ssh/known_hosts
-  script:
-    - echo "Deploying to production server..."
-    # 同步前端构建产物
-    - rsync -avz --delete frontend/dist/ ${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}/frontend/dist/
-    # 同步后端代码
-    - rsync -avz --exclude='__pycache__' --exclude='*.pyc' --exclude='*.db' --exclude='uploads/' backend/ ${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}/backend/
-    # 重启服务
-    - ssh ${DEPLOY_USER}@${DEPLOY_HOST} "cd ${DEPLOY_PATH} && ./restart.sh || true"
+    # Restart service
+    - ssh ${DEPLOY_USER}@${DEPLOY_HOST} "cd ${DEPLOY_PATH} && ./restart.sh || echo 'restart.sh not found, please restart manually'"
   environment:
     name: production
     url: https://${DEPLOY_HOST}${BASE_PATH:-/}
