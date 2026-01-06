@@ -27,19 +27,26 @@ export default function DashboardPage() {
     }
   }, []);
 
+  // Initial load - only run once on mount
   useEffect(() => {
     loadFiles();
+  }, [loadFiles]);
 
-    // Optimized polling: only poll when there are files being parsed, and increased interval to 5s
+  // Polling for parsing status - separate effect to avoid infinite loop
+  useEffect(() => {
+    const hasPending = files.some(f => f.parse_status === 'pending' || f.parse_status === 'parsing');
+    
+    // Only start polling if there are files being parsed
+    if (!hasPending) {
+      return;
+    }
+
     const interval = setInterval(() => {
-      const hasPending = files.some(f => f.parse_status === 'pending' || f.parse_status === 'parsing');
-      if (hasPending) {
-        loadFiles();
-      }
-    }, 5000); // Changed from 3s to 5s to reduce request frequency
+      loadFiles();
+    }, 5000);
 
     return () => clearInterval(interval);
-  }, [loadFiles, files]);
+  }, [files, loadFiles]);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
